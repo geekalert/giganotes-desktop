@@ -1,0 +1,39 @@
+<div fxLayout="column" style="width:100%">
+
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <span>GIGANOTES icon</span>
+
+      <!-- Filler that pushes the menu button to the end of the toolbar -->
+      <span fxFlex></span>
+
+      <button *ngIf="true" mat-button [matMenuTriggerFor]="menu">
+        <mat-icon>person</mat-icon>
+        <span class="icon-spacer"></span>
+        <span>User</span>
+        <span class="icon-spacer"></span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item *ngIf="true" (click)="logout()">
+          <span>Logout</span>
+          <span class="icon-spacer"></span>
+          <mat-icon>exit_to_app</mat-icon>
+        </button>
+    
+      </mat-menu>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+    <div class="content" style="height: 100%">
+      
+      <div resizable [sizerBarPosition]="2" fxFlex="20">
+        <app-navigation-tree [items]="items"></app-navigation-tree>
+      </div>
+  
+
+          <div fxFlex="80" fxLayout="column">
+            <router-outlet></router-outlet>
+          </div>
+      </div>
+    </div>
