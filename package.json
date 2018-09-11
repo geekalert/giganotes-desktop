@@ -1,18 +1,15 @@
 {
-  "name": "angular-electron",
-  "version": "4.2.2",
-  "description": "Angular 6 with Electron (Typescript + SASS + Hot Reload)",
-  "homepage": "https://github.com/maximegris/angular-electron",
+  "name": "giganotes",
+  "version": "1.1.0",
+  "description": "Note taking application",
+  "homepage": "https://giganotes.com",
   "author": {
-    "name": "Maxime GRIS",
-    "email": "maxime.gris@gmail.com"
+    "name": "FourthByte",
+    "email": "4thbyte@gmail.com"
   },
   "keywords": [
-    "angular",
-    "angular 6",
-    "electron",
-    "typescript",
-    "sass"
+    "giganites",
+    "note-taking"
   ],
   "main": "main.js",
   "private": true,
@@ -69,7 +66,7 @@
     "@types/node": "8.9.4",
     "codelyzer": "4.2.1",
     "core-js": "2.5.6",
-    "electron": "2.0.7",
+    "electron": "2.0.9",
     "electron-builder": "20.28.1",
     "electron-reload": "1.2.2",
     "jasmine-core": "3.1.0",
