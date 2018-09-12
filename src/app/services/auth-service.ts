@@ -1,14 +1,11 @@
 import {Injectable} from "@angular/core";
-import { map } from "rxjs/operators";
-import { Observable } from "rxjs/internal/Observable";
-import { ReplaySubject } from "rxjs/internal/ReplaySubject";
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from "../services/storage";
 import { AppConfig } from '../../environments/environment';
 import { LoggerService } from "./logger-service";
-import { RequestOptions, Headers } from '@angular/http';
 import { HttpHeaders } from '@angular/common/http';
+import { AuthResponse} from '../model/server-responses-models/auth-response';
 
 @Injectable()
 export class AuthService {
@@ -18,16 +15,15 @@ export class AuthService {
   public userId: number;
   public email: string;
   public loginType: string;
-
+  public headers: HttpHeaders;
   requestOptions: any;
 
   constructor(private readonly http: HttpClient,
               public readonly storage: Storage,
               private readonly jwtHelper: JwtHelperService,
               private readonly loggerService: LoggerService) {
-      const headers = new HttpHeaders()
-      headers.append('ClientType', AppConfig.clientType);
-      this.requestOptions = {headers : headers};
+      this.headers = new HttpHeaders()
+              .set('ClientType', AppConfig.clientType);
   }
 
   async hasValidToken(): Promise<boolean> {    
@@ -39,17 +35,18 @@ export class AuthService {
     return ((jwt != null) && !this.jwtHelper.isTokenExpired(jwt))
   }
   
-  async login(values: any) : Promise<any> {
-    const json = await this.http.post(AppConfig.apiUrl + `login`, values).toPromise()
-    await this.storeTokenAndUsername(json.token, json.userId, values.email, 'internal')
-    return json
+  async login(values: any): Promise<AuthResponse> {
+    const authResponse = await this.http.post<AuthResponse>(AppConfig.apiUrl + `login`, values,
+                          {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
+    await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'internal')
+    return authResponse
   }
 
-  async loginSocial(values: any) : Promise<any> {
-    const json = await this.http.post(AppConfig.apiUrl + `login-social`, values, this.requestOptions)
-      .pipe(map(response => response.json())).toPromise()
-    await this.storeTokenAndUsername(json.token, json.userId, values.email, 'social')
-    return json
+  async loginSocial(values: any): Promise<AuthResponse> {
+    const authResponse = await this.http.post<AuthResponse>(AppConfig.apiUrl + `login-social`, values,
+                     {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
+    await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'social')
+    return authResponse
   }
 
   async logout() {
@@ -61,13 +58,13 @@ export class AuthService {
     this.isOffline = false
   }
 
-  async signup(values: any): Promise<any> {
-    const json = await this.http.post(AppConfig.apiUrl + `register`, values, this.requestOptions)
-    .pipe(map(response => response.json())).toPromise()      
-    if (json.token != null) {
-       await this.storeTokenAndUsername(json.token, json.userId, values.email, 'internal');
+  async signup(values: any): Promise<AuthResponse> {
+    const authResponse = await this.http.post<AuthResponse>(AppConfig.apiUrl + `register`, values,
+                {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
+    if (authResponse.token != null) {
+       await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'internal');
     } 
-    return json
+    return authResponse
   }
   
   async storeTokenAndUsername(jwt: string, userId: number, email: string, loginType: string): Promise<any> {

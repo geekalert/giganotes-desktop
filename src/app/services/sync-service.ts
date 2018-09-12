@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { LocalNoteService } from './local-note-service';
 import { AuthService } from './auth-service';
-import { AuthHttp } from 'angular2-jwt';
 import { Note } from './../model/note';
 import { Folder } from './../model/folder';
 import { RemoteNoteService } from './remote-note-service';
@@ -16,7 +15,7 @@ export class SyncService {
     private subject = new Subject<any>();
     private _isSyncing = false;
 
-    public lastSyncDate : Date = null;
+    public lastSyncDate: Date = null;
 
     constructor(private localNoteService: LocalNoteService,
         private loggerSerivce: LoggerService,
@@ -35,15 +34,15 @@ export class SyncService {
             const syncData = await this.remoteNoteService.getLatestSyncData(true);
             await this.syncFolders(syncData.folders);
             await this.syncNotes(syncData.notes);
-            this.subject.next({type: 'success'})
-        } catch(e) {
-            this.subject.next({type: 'error', message : 'Cannot connect to server'})
+            this.subject.next({ type: 'success' })
+        } catch (e) {
+            this.subject.next({ type: 'error', message: 'Cannot connect to server' })
         } finally {
             this._isSyncing = false;
         }
     }
 
-    async syncNotes(notesRemoteInfoList: Array<Note>) {        
+    async syncNotes(notesRemoteInfoList: Array<Note>) {
         const notesRemoteInfoMap = new Map<string, Note>();
         const updateNotesList = new Array<Note>();
         const uploadNotesList = new Array<Note>();
@@ -57,7 +56,7 @@ export class SyncService {
                     this.loggerSerivce.info('Note with id' + localNote.id + ' deleted remotely, updating locally')
                     const remoteNote = await this.remoteNoteService.loadNoteById(remoteNoteInfo.id)
                     await this.localNoteService.updateNote(remoteNote);
-                }else if (remoteNoteInfo.deletedAt == null && localNote.deletedAt != null) {
+                } else if (remoteNoteInfo.deletedAt == null && localNote.deletedAt != null) {
                     this.loggerSerivce.info('Note with id' + localNote.id + ' deleted locally, pushing to updates list')
                     updateNotesList.push(localNote)
                 } else if (remoteNoteInfo.updatedAt > localNote.updatedAt) {
@@ -78,13 +77,13 @@ export class SyncService {
         }
 
         // Update the nessessary notes
-        for(const updatedNote of updateNotesList) {
-            await this.remoteNoteService.updateNote(updatedNote) 
+        for (const updatedNote of updateNotesList) {
+            await this.remoteNoteService.updateNote(updatedNote)
         }
 
         const localNotesList = await this.localNoteService.getAllNotes(false);
 
-        for(const localNote of localNotesList) {
+        for (const localNote of localNotesList) {
             if (!notesRemoteInfoMap.has(localNote.id)) {
                 uploadNotesList.push(localNote)
             }
@@ -93,12 +92,12 @@ export class SyncService {
         // Sort notes for upload by level
         uploadNotesList.sort((a, b) => b.level - a.level)
 
-        for(const uploadedNote of uploadNotesList) {
+        for (const uploadedNote of uploadNotesList) {
             await this.remoteNoteService.uploadNote(uploadedNote)
         }
     }
 
-    async syncFolders(remoteFoldersList: Array<Folder>) {        
+    async syncFolders(remoteFoldersList: Array<Folder>) {
         const foldersRemoteMap = new Map<string, Folder>();
         const updateFoldersList = new Array<Folder>();
         const uploadFoldersList = new Array<Folder>();
@@ -127,7 +126,7 @@ export class SyncService {
         }
 
         // Update the nessessary folders
-        for(const updatedFolder of updateFoldersList) {
+        for (const updatedFolder of updateFoldersList) {
             await this.remoteNoteService.updateFolder(updatedFolder)
         }
 
@@ -144,7 +143,7 @@ export class SyncService {
         // Sort folders for upload by level
         uploadFoldersList.sort((a, b) => b.level - a.level)
 
-        for(const uploadedFolder of uploadFoldersList) {
+        for (const uploadedFolder of uploadFoldersList) {
             this.remoteNoteService.uploadFolder(uploadedFolder)
         }
     }

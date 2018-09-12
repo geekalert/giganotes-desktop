@@ -2,8 +2,10 @@ import { BaseLoginProvider } from './base-login-provider';
 import { SocialUser } from './../../model/social-auth/social-user';
 import { LoginOpt } from './social-auth-service';
 import { OAuth2Provider } from 'electron-oauth-helper';
-import { remote} from 'electron'
-import {Http, Headers, RequestOptions} from '@angular/http';
+import { remote } from 'electron'
+import { HttpClient } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
+import { GoogleAuthResponse } from './../../model/server-responses-models/google-auth-response';
 
 export class GoogleLoginProvider extends BaseLoginProvider {
 
@@ -11,7 +13,7 @@ export class GoogleLoginProvider extends BaseLoginProvider {
 
   protected auth2: any;
 
-  constructor(private http: Http, private clientId: string, private opt: LoginOpt = {scope: 'email'}) { super(); }
+  constructor(private http: HttpClient, private clientId: string, private opt: LoginOpt = { scope: 'email' }) { super(); }
 
   initialize(): Promise<SocialUser> {
     return new Promise((resolve, reject) => {
@@ -38,26 +40,24 @@ export class GoogleLoginProvider extends BaseLoginProvider {
         scope: this.opt.scope
       }
       const provider = new OAuth2Provider(config)
-        .withCustomAuthorizationRequestParameter({nonce: "n-0S6_WzA2Mj"})
+        .withCustomAuthorizationRequestParameter({ nonce: "n-0S6_WzA2Mj" })
 
       provider.perform(window)
         .then(resp => {
+          const headers = new HttpHeaders()
+            .set('Authorization', 'Bearer ' + resp.access_token);
 
-          const headers = new Headers()
-          headers.append('Authorization', 'Bearer ' + resp.access_token)
-          const options = new RequestOptions({headers: headers});
-
-          http.get('https://www.googleapis.com/oauth2/v3/userinfo', options)
-              .pipe(map(response => response.json()))
-              .toPromise().then(rq => {
-            const user = new SocialUser()
-            user.email = rq.email
-            user.idToken = resp.id_token
-            resolve(user)
-            window.close();
-          }).catch(error => {
-            reject(error)
-          })
+          http.get<GoogleAuthResponse>('https://www.googleapis.com/oauth2/v3/userinfo',
+            { responseType: 'json', observe: 'body', headers: headers })
+            .toPromise<GoogleAuthResponse>().then((rq: GoogleAuthResponse) => {
+              const user = new SocialUser()
+              user.email = rq.email
+              user.idToken = resp.id_token
+              resolve(user)
+              window.close();
+            }).catch(error => {
+              reject(error)
+            })
         })
         .catch(error => {
           reject(error)
