@@ -11,6 +11,8 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class NotesListWithEditorComponent implements OnInit {
 
+  public searchFor: string;
+
   ngOnInit() {
     this.route.params.subscribe(params => {
       switch(params.mode) {
@@ -168,4 +170,11 @@ export class NotesListWithEditorComponent implements OnInit {
      iconRegistry.addSvgIconSetInNamespace('avatars', avatarsSafeUrl);
   }
 
+  searchRepositoryKeyDown(event) {
+
+  }
+
+  searchRepository() {
+    
+  }
 }
