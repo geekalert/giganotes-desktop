@@ -21,6 +21,12 @@ import { HomeComponent } from './home/home.component';
 
 import { HomeRoutingModule } from './home/home-routing.module';
 
+import { APP_INITIALIZER } from '@angular/core';
+
+import { DbService } from './services/db-service';
+import { LoggerService } from './services/logger-service';
+import { ElectronService } from './providers/electron.service';
+
 import {
   MatButtonModule,
   MatCardModule,
@@ -72,7 +78,14 @@ import {
       HomeRoutingModule,
       AppRoutingModule
    ],
-   providers: [],
+   providers: [DbService, LoggerService, ElectronService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (dbService: DbService) => function() {return dbService.openDatabase()},
+      deps: [DbService],
+      multi: true
+    }
+   ],
    bootstrap: [
       AppComponent
    ]
