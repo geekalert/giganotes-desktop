@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ResizableDirective } from './directives/resizable.directive';
@@ -26,6 +26,35 @@ import { APP_INITIALIZER } from '@angular/core';
 import { DbService } from './services/db-service';
 import { LoggerService } from './services/logger-service';
 import { ElectronService } from './providers/electron.service';
+import { LocalNoteService } from './services/local-note-service';
+import { RemoteNoteService } from './services/remote-note-service';
+import { SyncService} from './services/sync-service';
+
+import { AuthGuard } from './guards/auth-guard';
+import { AuthService } from './services/auth-service';
+import { AuthServiceConfig, SocialAuthService } from './services/social-auth/social-auth-service';
+import { GoogleLoginProvider } from './services/social-auth/google-login-provider';
+import { HttpClient } from '@angular/common/http';
+import { Storage } from './services/storage';
+
+import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
+
+export function provideSocialConfig(http: HttpClient) {
+  return new AuthServiceConfig([
+    {
+      id: GoogleLoginProvider.PROVIDER_ID,
+      provider: new GoogleLoginProvider(http, "991995282025-4159nc4q0l83fkapl4j3qav55asa38g6.apps.googleusercontent.com")
+    },
+  ]);
+}
+
+export function jwtOptionsFactory(storage: Storage) {
+  return {
+    tokenGetter: () => {
+      return storage.get('jwt');
+    }
+  }
+}
 
 import {
   MatButtonModule,
@@ -45,49 +74,70 @@ import {
 } from '@angular/material';
 
 @NgModule({
-   declarations: [
-      AppComponent,
-      ResizableDirective,
-      NotesListWithEditorComponent,
-      NavigationTreeComponent,
-      SettingsComponent,
-      LoginComponent,
-      HomeComponent
-   ],
-   imports: [
-      BrowserModule,
-      FormsModule,
-      HttpClientModule,
-      BrowserAnimationsModule,
-      MatButtonModule,
-      MatCardModule,
-      MatCheckboxModule,
-      MatDialogModule,
-      MatIconModule,
-      MatInputModule,
-      MatListModule,
-      MatMenuModule,
-      MatSelectModule,
-      MatSidenavModule,
-      MatSlideToggleModule,
-      MatTabsModule,
-      MatToolbarModule,
-      MatTreeModule,
-      FlexLayoutModule,
-      EditorModule,
-      HomeRoutingModule,
-      AppRoutingModule
-   ],
-   providers: [DbService, LoggerService, ElectronService,
+  declarations: [
+    AppComponent,
+    ResizableDirective,
+    NotesListWithEditorComponent,
+    NavigationTreeComponent,
+    SettingsComponent,
+    LoginComponent,
+    HomeComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpClientModule,
+    JwtModule.forRoot({
+      jwtOptionsProvider: {
+        provide: JWT_OPTIONS,
+        useFactory: jwtOptionsFactory,
+        deps: [Storage]
+      }
+    }),
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSlideToggleModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTreeModule,
+    FlexLayoutModule,
+    EditorModule,
+    HomeRoutingModule,
+    AppRoutingModule,
+  ],
+  providers: [DbService,
+    LoggerService,
+    LocalNoteService,
+    RemoteNoteService,
+    SyncService,
+    ElectronService,
+    AuthGuard,
+    AuthService,
+    Storage,
+    SocialAuthService,
     {
       provide: APP_INITIALIZER,
-      useFactory: (dbService: DbService) => function() {return dbService.openDatabase()},
+      useFactory: (dbService: DbService) => function () { return dbService.openDatabase() },
       deps: [DbService],
       multi: true
+    },
+    {
+      provide: AuthServiceConfig,
+      useFactory: provideSocialConfig,
+      deps: [HttpClient]
     }
-   ],
-   bootstrap: [
-      AppComponent
-   ]
+  ],
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule { }
