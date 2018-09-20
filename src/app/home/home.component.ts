@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { TreeItem, TreeFolderItem } from '../model/ui/tree-item';
 import { AuthService } from '../services/auth-service';
 import { SocialAuthService } from '../services/social-auth/social-auth-service';
+import { LocalNoteService } from '../services/local-note-service';
+import { RemoteNoteService } from '../services/remote-note-service';
 
 @Component({
   selector: 'app-home',
@@ -17,11 +19,17 @@ export class HomeComponent implements OnInit {
   constructor(private route: ActivatedRoute,
     private authService: AuthService,
     private socialAuthService: SocialAuthService,
+    private localNoteService: LocalNoteService,
+    private remoteNoteService: RemoteNoteService,
     private router: Router, ) {
 
   }
 
   ngOnInit() {
+    this.localNoteService.getAllFolders(false).then((folders) => {
+      console.log(folders.length)
+    })
+
     this.loadItems();
   }
 

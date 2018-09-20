@@ -1,3 +1,4 @@
+import { $AT } from 'codelyzer/angular/styles/chars';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home.component';
@@ -8,14 +9,14 @@ import { from } from 'rxjs'
 
 const homeRoutes: Routes = [
   {
-    path: '',
+    path: 'home',
     component: HomeComponent,
     canActivate: [AuthGuard],
     children: [
       {
         path: '',
-        redirectTo: '/list',
-        pathMatch: 'full'
+        component: NotesListWithEditorComponent,
+        data: { mode: 'all' }
       },
       {
         path: 'list',
