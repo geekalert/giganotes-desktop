@@ -1,34 +1,37 @@
+<div>
+  <button mat-button>
+    <mat-icon>add</mat-icon>New note
+  </button>
+  <button mat-button>
+    <mat-icon>favorite</mat-icon>Add to favorites
+  </button>
+</div>
 
 
-  <div>
-      <button mat-button><mat-icon>add</mat-icon>New note</button>
-      <button mat-button><mat-icon>favorite</mat-icon>Add to favorites</button>
+
+<div fxLayout="row" style="height:100%;">
+  <div fxFlex="30" resizable [sizerBarPosition]="2">
+    <div fxLayout="column" style="height:100%;">
+      <mat-form-field color="primary" floatLabel="never" style="width: 100%;">
+        <input #searchHelpPanelContainer matInput [(ngModel)]="searchFor" #searchInput type="search" placeholder="Search notes..."
+          (keydown)="searchRepositoryKeyDown($event);">
+        <button mat-button matSuffix mat-icon-button aria-label="Search repository" (click)="searchRepository();">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div style="overflow: auto; height:100%;">
+        <mat-nav-list>
+          <mat-list-item *ngFor="let note of notes" (click)="onNoteClick(note)">
+            <mat-icon matListAvatar svgIcon="avatars:svg-14" class="avatar"></mat-icon>
+            <span>{{note.title}}</span>
+          </mat-list-item>
+        </mat-nav-list>
+      </div>
+    </div>
   </div>
-  
 
-
-<div fxLayout="row" style="height:100%;">     
-<div fxFlex="30" resizable [sizerBarPosition]="2">
-<div fxLayout="column" style="height:100%;">
-<mat-form-field color="primary" floatLabel="never" style="width: 100%;">
-    <input #searchHelpPanelContainer matInput [(ngModel)]="searchFor" #searchInput type="search" placeholder="Search notes..." (keydown)="searchRepositoryKeyDown($event);">
-    <button mat-button matSuffix mat-icon-button aria-label="Search repository" (click)="searchRepository();">
-        <mat-icon>search</mat-icon>
-    </button>
-</mat-form-field>
-
-<div style="overflow: auto; height:100%;">
-  <mat-nav-list>
-    <mat-list-item *ngFor="let user of users" (click)="selectedUser = user">
-      <mat-icon matListAvatar svgIcon="avatars:{{user.avatar}}" class="avatar"></mat-icon>
-      <span>{{user.name}}</span>
-    </mat-list-item>
-  </mat-nav-list>
+  <div fxFlex="70">
+    <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%"></editor>
   </div>
 </div>
-</div>
-
-<div fxFlex="70">
-<editor fxLayout="column" style="height:100%; width:100%"></editor>
-</div>
-</div>  

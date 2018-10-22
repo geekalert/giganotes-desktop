@@ -21,7 +21,7 @@ export class NavigationTreeComponent implements OnInit {
 
   onSelectedItemClick(item) {
     this.selectedItem = item
-    item.onClick(this, item)
+    item.onClick(item)
   }
 
   onItemClick2() {

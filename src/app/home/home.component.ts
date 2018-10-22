@@ -44,15 +44,15 @@ export class HomeComponent implements OnInit {
   }
 
   onItemClick(parent, item) {
-    parent.router.navigate(['list', { mode: 'all' }], { relativeTo: this.route })
+    parent.router.navigate(['list', { mode: 'all' }], { relativeTo: parent.route })
   }
 
   onFavoritesClick(parent, item) {
-    parent.router.navigate(['list', { mode: 'fav' }], { relativeTo: this.route })
+    parent.router.navigate(['list', { mode: 'fav' }], { relativeTo: parent.route })
   }
 
   onFolderClick(parent, item) {
-    parent.router.navigate(['list', { mode: 'folder', folderId: item.folderId }], { relativeTo: this.route })
+    parent.router.navigate(['list', { mode: 'folder', folderId: item.folderId }], { relativeTo: parent.route })
   }
 
 
@@ -76,7 +76,9 @@ export class HomeComponent implements OnInit {
       curTreeItem.folderId = curFolder.id;
       curTreeItem.showMenuButton = true;
       curTreeItem.hasAddButton = true;
-      curTreeItem.onClick = this.onFolderClick;
+      curTreeItem.onClick = (item: any) => {
+        this.onFolderClick(this, item)
+      };
       curTreeItem.name = curFolder.title;
 
       parentItem.subItems.push(curTreeItem)

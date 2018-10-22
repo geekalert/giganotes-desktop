@@ -13,15 +13,15 @@ export class LocalNoteService {
 
 
     constructor(private loggerService: LoggerService,
-                private authService: AuthService,
-                private dbService: DbService) {
+        private authService: AuthService,
+        private dbService: DbService) {
     }
 
     async uploadNote(note: Note) {
         let deletedAtTime = null
         if (note.deletedAt != null) {
             deletedAtTime = note.deletedAt.getTime()
-        }        
+        }
         await this.dbService.run('INSERT INTO note (id, title, text, folderId, level, userId, createdAt, updatedAt, deletedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);', [note.id, note.title, note.text, note.folderId, note.level, note.userId, note.createdAt.getTime(), note.updatedAt.getTime(), deletedAtTime]);
     }
 
@@ -55,20 +55,20 @@ export class LocalNoteService {
             if (note.deletedAt != null) {
                 deletedAtTime = note.deletedAt.getTime()
             }
-                        
+
             await this.dbService.run('UPDATE note SET title = ?, text = ?, folderId = ?, level = ?, userId = ?, updatedAt = ?, deletedAt = ? WHERE id = ?', [note.title, note.text, note.folderId, note.level, this.authService.userId, updatedAt.getTime(), deletedAtTime, note.id]);
         }
     }
 
     async uploadFolder(folder: Folder) {
         const hasFolder = await this.hasFolderWithId(folder.id)
-        if (hasFolder) 
+        if (hasFolder)
             return
-        
+
         let deletedAtTime = null
         if (folder.deletedAt != null) {
             deletedAtTime = folder.deletedAt.getTime()
-        }                
+        }
         await this.dbService.run('INSERT INTO folder (id, title, parentId, level, userId, createdAt, updatedAt, deletedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', [folder.id, folder.title, folder.parentId, folder.level, folder.userId, folder.createdAt.getTime(), folder.updatedAt.getTime(), deletedAtTime]);
     }
 
@@ -150,7 +150,7 @@ export class LocalNoteService {
     		JOIN children c
 			ON f.parentId = c.id)
 			SELECT id FROM children`
-        
+
         const folderIds = await this.dbService.all(allChildFoldersQuery, [id])
         const idsList = []
 
@@ -209,8 +209,33 @@ export class LocalNoteService {
         if (results.item(0).deletedAt != null) {
             folder.deletedAt = new Date(results.item(0).deletedAt)
         }
-        
+
         return Promise.resolve(folder)
+    }
+
+    async loadNotesByFolder(folderId: string): Promise<Note[]> {
+        const childNotesQuery = 'SELECT id, title, text, folderId, level, createdAt, updatedAt, deletedAt, userId FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ?'
+        const childNotesResults = await this.dbService.all(childNotesQuery, [folderId, this.authService.userId])
+
+        const childNotes = new Array<Note>();
+
+        for (let i = 0; i < childNotesResults.length; i++) {
+            const entry = childNotesResults.item(i)
+            const childNote = new Note();
+
+            childNote.id = entry.id;
+            childNote.title = entry.title;
+            childNote.text = entry.text;
+            childNote.folderId = entry.folderId;
+            childNote.level = entry.level;
+            childNote.createdAt = new Date(entry.createdAt)
+            childNote.updatedAt = new Date(entry.updatedAt)
+            childNote.userId = entry.userId
+
+            childNotes.push(childNote);
+        }
+
+        return Promise.resolve(childNotes)
     }
 
     async loadFolderWithActualChildren(id: string): Promise<Folder> {
@@ -243,7 +268,7 @@ export class LocalNoteService {
         if (childNotesResults.length > 0) {
             folder.notes = new Array<Note>();
         }
-        
+
         for (let i = 0; i < childNotesResults.length; i++) {
             const entry = childNotesResults.item(i)
             const childNote = new Note();
@@ -264,7 +289,7 @@ export class LocalNoteService {
     }
 
     async getAllNotes(includeDeleted: boolean): Promise<Note[]> {
-        var query : string
+        var query: string
         if (includeDeleted) {
             query = 'SELECT id, title, text, folderId, level, createdAt, updatedAt, deletedAt, userId FROM note WHERE userId = ?'
         } else {
@@ -299,7 +324,7 @@ export class LocalNoteService {
     }
 
     async getAllFolders(includeDeleted: boolean): Promise<Folder[]> {
-        var query : string
+        var query: string
         if (includeDeleted) {
             query = 'SELECT id, title, parentId, level, createdAt, updatedAt, deletedAt, userId FROM folder WHERE userId = ?'
         } else {
@@ -307,7 +332,7 @@ export class LocalNoteService {
         }
         const results = await this.dbService.all(query, [this.authService.userId])
 
-        const folders = Array<Folder>()        
+        const folders = Array<Folder>()
         for (let i = 0; i < results.length; i++) {
             const entry = results.item(i);
             const folder = new Folder();
@@ -338,7 +363,7 @@ export class LocalNoteService {
 
         const notes = Array<Note>();
         for (let i = 0; i < noteResults.length; i++) {
-            const entry = noteResults.item(i);                        
+            const entry = noteResults.item(i);
             notes.push(await this.loadNoteById(entry.id))
         }
 
