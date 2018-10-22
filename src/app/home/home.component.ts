@@ -60,18 +60,33 @@ export class HomeComponent implements OnInit {
 
   }
 
-  loadChildrenToFolder(parentFolderItem: TreeItem) {
-    const myNotesMenuSubItem = new TreeFolderItem();
-    myNotesMenuSubItem.folderId = '112';
-    myNotesMenuSubItem.showMenuButton = true;
-    myNotesMenuSubItem.hasAddButton = true;
-    myNotesMenuSubItem.onClick = this.onFolderClick;
-    myNotesMenuSubItem.name = "SubChild";
-    myNotesMenuSubItem.iconName = parentFolderItem.iconName
-    parentFolderItem.subItems.push(myNotesMenuSubItem)
+  async loadChildrenToFolder(root: TreeFolderItem) {
+    const foldersList = await this.localNoteService.getAllFolders(false)
+    const sortedFoldersList = foldersList.sort((a, b) => a.level - b.level);
+
+    const treeItemsMap = new Map<string, TreeItem>();
+    treeItemsMap.set(sortedFoldersList[0].id, root)
+
+    for (let i = 1; i < sortedFoldersList.length; i++) {
+      const curFolder = sortedFoldersList[i]
+      const parentItem = curFolder.parentId == null ? root : treeItemsMap.get(curFolder.parentId)
+
+      const curTreeItem = new TreeFolderItem();
+
+      curTreeItem.folderId = curFolder.id;
+      curTreeItem.showMenuButton = true;
+      curTreeItem.hasAddButton = true;
+      curTreeItem.onClick = this.onFolderClick;
+      curTreeItem.name = curFolder.title;
+
+      parentItem.subItems.push(curTreeItem)
+      treeItemsMap.set(curFolder.id, curTreeItem)
+    }
+
+    return Promise.resolve(root)
   }
 
-  loadItems() {
+  async loadItems() {
 
     const allNotesMenuItem = new TreeItem();
     allNotesMenuItem.onClick = this.onItemClick;
@@ -88,7 +103,7 @@ export class HomeComponent implements OnInit {
     myNotesMenuItem.iconName = 'folder'
     this.items.push(myNotesMenuItem)
 
-    this.loadChildrenToFolder(myNotesMenuItem)
+    await this.loadChildrenToFolder(myNotesMenuItem)
   }
 
 }
