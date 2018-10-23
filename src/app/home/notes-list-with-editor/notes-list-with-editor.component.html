@@ -32,6 +32,9 @@
   </div>
 
   <div fxFlex="70">
-    <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%"></editor>
+    <div fxLayout="column" style="height:100%; width:100%">
+      <input matInput placeholder="Favorite food" [(ngModel)]="selectedNote.title">
+      <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%"></editor>
+    </div>
   </div>
 </div>

@@ -15,7 +15,7 @@ export class NotesListWithEditorComponent implements OnInit {
 
   public searchFor: string;
   notes = Array<Note>();
-  selectedNote: Note;
+  selectedNote = new Note();
   noteEditor: any;
   editorSetup: any;
 
