@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['login'])
   }
 
-  onItemClick(parent, item) {
+  onAllNotesClick(parent, item) {
     parent.router.navigate(['list', { mode: 'all' }], { relativeTo: parent.route })
   }
 
@@ -96,7 +96,10 @@ export class HomeComponent implements OnInit {
     const rootItem = new TreeItem();
 
     const allNotesMenuItem = new TreeItem();
-    allNotesMenuItem.onClick = this.onItemClick;
+
+    allNotesMenuItem.onClick = (item:any) => {
+      this.onAllNotesClick(this, item)
+    };
     allNotesMenuItem.name = "All notes";
     allNotesMenuItem.iconName = 'list'
     allNotesMenuItem.parent = rootItem;
@@ -107,7 +110,9 @@ export class HomeComponent implements OnInit {
     myNotesMenuItem.folderId = '111';
     myNotesMenuItem.showMenuButton = true;
     myNotesMenuItem.hasAddButton = true;
-    myNotesMenuItem.onClick = this.onFolderClick;
+    myNotesMenuItem.onClick = (item:any) => {
+      this.onFolderClick(this, item);
+    }
     myNotesMenuItem.name = "My notes";
     myNotesMenuItem.iconName = 'folder'  
     myNotesMenuItem.parent = rootItem;  

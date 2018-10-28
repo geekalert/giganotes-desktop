@@ -20,7 +20,7 @@ export class NavigationTreeComponent implements OnInit {
   onSelectedItemClick(item: TreeItem) {    
     this.clearAnySelection(item)
     item.isSelected = true
-    item.onClick(this, item)    
+    item.onClick(item)    
   }
 
   clearAnySelection(curItem: TreeItem) {
