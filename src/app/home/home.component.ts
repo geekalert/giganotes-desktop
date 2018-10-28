@@ -76,10 +76,12 @@ export class HomeComponent implements OnInit {
       curTreeItem.folderId = curFolder.id;
       curTreeItem.showMenuButton = true;
       curTreeItem.hasAddButton = true;
+      curTreeItem.iconName = 'folder'
       curTreeItem.onClick = (item: any) => {
         this.onFolderClick(this, item)
       };
       curTreeItem.name = curFolder.title;
+      curTreeItem.parent = parentItem;
 
       parentItem.subItems.push(curTreeItem)
       treeItemsMap.set(curFolder.id, curTreeItem)
@@ -90,10 +92,15 @@ export class HomeComponent implements OnInit {
 
   async loadItems() {
 
+    // Pseudo root item
+    const rootItem = new TreeItem();
+
     const allNotesMenuItem = new TreeItem();
     allNotesMenuItem.onClick = this.onItemClick;
     allNotesMenuItem.name = "All notes";
     allNotesMenuItem.iconName = 'list'
+    allNotesMenuItem.parent = rootItem;
+
     this.items.push(allNotesMenuItem)
 
     const myNotesMenuItem = new TreeFolderItem();
@@ -102,9 +109,12 @@ export class HomeComponent implements OnInit {
     myNotesMenuItem.hasAddButton = true;
     myNotesMenuItem.onClick = this.onFolderClick;
     myNotesMenuItem.name = "My notes";
-    myNotesMenuItem.iconName = 'folder'
+    myNotesMenuItem.iconName = 'folder'  
+    myNotesMenuItem.parent = rootItem;  
+
     this.items.push(myNotesMenuItem)
 
+    rootItem.subItems.push(...this.items)
     await this.loadChildrenToFolder(myNotesMenuItem)
   }
 

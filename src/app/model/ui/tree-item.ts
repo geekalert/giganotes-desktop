@@ -4,8 +4,14 @@ export class TreeItem {
     public hasAddButton = false;
     public iconName: string;
     public subItems = Array<TreeItem>();
-
+    public parent: TreeItem;
+    public isSelected = false;
     public onClick: (parent: any, item: any) => void;
+
+    clearSelectionRecursive() {
+        this.isSelected = false
+        this.subItems.forEach(item => item.clearSelectionRecursive());
+    }    
 }
 
 export class TreeFolderItem extends TreeItem {
