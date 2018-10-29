@@ -6,13 +6,13 @@
             <mat-icon *ngIf="item.subItems?.length > 0" (click)="item.expanded = !item.expanded">{{item.expanded ? 'expand_less' : 'expand_more'}}</mat-icon>
             <span fxFlex></span>
 
-              <mat-menu #appMenu="matMenu" >
+              <mat-menu #appMenu="matMenu">
                 <button mat-menu-item>Add folder</button>
                 <button mat-menu-item>Rename</button>
                 <button mat-menu-item>Help</button>
               </mat-menu>
               
-              <button mat-icon-button [matMenuTriggerFor]="appMenu" [style.display]=" !item.showMenuButton ?'none':'inherit'">
+              <button mat-icon-button [matMenuTriggerFor]="appMenu" [style.display]=" !item.showMenuButton || !item.isSelected ?'none':'inherit'">
                 <mat-icon>more_hor</mat-icon>
               </button>
         </mat-list-item>

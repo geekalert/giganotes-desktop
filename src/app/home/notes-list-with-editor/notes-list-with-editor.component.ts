@@ -22,6 +22,8 @@ export class NotesListWithEditorComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       switch (params.mode) {
+        case 'all':
+          this.loadAllNotes()
         case 'fav':
           //this.users = this.favUsers;
           break;
@@ -50,7 +52,10 @@ export class NotesListWithEditorComponent implements OnInit {
     iconRegistry.addSvgIconSetInNamespace('avatars', avatarsSafeUrl);
   }
 
-
+  async loadAllNotes() {
+    this.notes = await this.localNoteService.getAllNotes(false)
+  }
+  
   async loadNotes(folderId: string) {
     this.notes = await this.localNoteService.loadNotesByFolder(folderId)
   }

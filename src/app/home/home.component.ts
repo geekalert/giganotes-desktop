@@ -106,6 +106,16 @@ export class HomeComponent implements OnInit {
 
     this.items.push(allNotesMenuItem)
 
+    const favoritesMenuItem = new TreeItem();
+    favoritesMenuItem.onClick = (item:any) => {
+      this.onFavoritesClick(this, item)
+    };
+    favoritesMenuItem.name = "Favorites";
+    favoritesMenuItem.iconName = 'favorite'
+    favoritesMenuItem.parent = rootItem;
+
+    this.items.push(favoritesMenuItem)
+
     const myNotesMenuItem = new TreeFolderItem();
     myNotesMenuItem.folderId = '111';
     myNotesMenuItem.showMenuButton = true;
