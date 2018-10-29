@@ -1,5 +1,5 @@
 <div>
-  <button mat-button>
+  <button mat-button (click)="onNewNote()">
     <mat-icon>add</mat-icon>New note
   </button>
   <button mat-button>
@@ -36,7 +36,18 @@
 
   <div fxFlex="70">
     <div fxLayout="column" style="height:100%; width:100%">
-      <input matInput placeholder="Favorite food" [(ngModel)]="selectedNote.title">
+      <div fxLayout="row">
+        <input matInput placeholder="Note title" [(ngModel)]="selectedNote.title">      
+
+        <button mat-button (click)="onPrintNote()">
+          <mat-icon>print</mat-icon>
+        </button> 
+
+        <button mat-button (click)="onSaveNote()">
+          <mat-icon>save</mat-icon>Save
+        </button> 
+
+      </div>
       <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%"></editor>
     </div>
   </div>

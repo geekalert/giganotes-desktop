@@ -69,6 +69,13 @@ export class NotesListWithEditorComponent implements OnInit {
     this.openNote(note)
   }
 
+  onNewNote() {
+
+  }
+  
+  onSaveNote() {    
+  }
+
   searchRepositoryKeyDown(event) {
 
   }
