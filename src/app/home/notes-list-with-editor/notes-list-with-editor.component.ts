@@ -149,6 +149,7 @@ export class NotesListWithEditorComponent implements OnInit {
   async loadNotes(folderId: string) {
     this.notes = await this.localNoteService.loadNotesByFolder(folderId)
   }
+
   openNote(note: Note) {
     this.noteEditor.setContent(note.text);
     this.noteEditor.focus();
@@ -159,11 +160,18 @@ export class NotesListWithEditorComponent implements OnInit {
     this.openNote(note)
   }
 
+
   onNewNote() {
 
   }
   
-  onSaveNote() {    
+  onSaveNote() {   
+    if (this.selectedNote == null) {
+      return
+    }
+      
+    this.selectedNote.text = this.noteEditor.getContent();
+    this.localNoteService.updateNote(this.selectedNote);         
   }
 
   searchRepositoryKeyDown(event) {

@@ -27,21 +27,6 @@ export class RemoteNoteService {
         this.headers.append("ClientID", token['jti'])
     }
 
-    async saveNote(note: Note) {
-        await this.setClientID()
-        const response = await this.authHttp.post<SaveDataResponse>(AppConfig.apiUrl + `api/save-note`, note,
-            { responseType: 'json', observe: 'body', headers: this.headers }).toPromise<SaveDataResponse>();
-        note.id = response.id;
-    }
-
-    async saveFolder(folder: Folder) {
-        await this.setClientID()
-        const response = await this.authHttp.post<SaveDataResponse>(AppConfig.apiUrl + `api/save-folder`, folder,
-            { responseType: 'json', observe: 'body', headers: this.headers })
-            .toPromise<SaveDataResponse>();
-        folder.id = response.id;
-    }
-
     async uploadNote(note: Note) {
         await this.setClientID()
         await this.authHttp.post(AppConfig.apiUrl + `api/upload-note`, note, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
