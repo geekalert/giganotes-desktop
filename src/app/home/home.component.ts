@@ -26,11 +26,11 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.localNoteService.getAllFolders(false).then((folders) => {
-      console.log(folders.length)
-    })
+    this.init();
+  }
 
-    this.loadItems();
+  async init() {
+    await this.loadItems();    
   }
 
   async logout() {
@@ -103,6 +103,7 @@ export class HomeComponent implements OnInit {
     allNotesMenuItem.name = "All notes";
     allNotesMenuItem.iconName = 'list'
     allNotesMenuItem.parent = rootItem;
+    allNotesMenuItem.isSelected = true; //Select 'All notes' item by default (while last folder persistense is not implemented)
 
     this.items.push(allNotesMenuItem)
 

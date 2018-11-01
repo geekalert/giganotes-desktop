@@ -6,6 +6,9 @@ import { LocalNoteService } from '../../services/local-note-service';
 import { Note } from '../../model/note';
 import { Folder } from '../../model/folder';
 import { LinkTreeItem } from '../../model/ui/linktreeitem';
+import { v4 as uuid } from 'uuid';
+import { AuthService } from '../../services/auth-service';
+import { SyncService } from '../../services/sync-service';
 
 @Component({
   selector: 'app-notes-list-with-editor',
@@ -20,21 +23,28 @@ export class NotesListWithEditorComponent implements OnInit {
   public searchFor: string;
   notes = Array<Note>();
   selectedNote = new Note();
+  currentFolder : Folder;
   noteEditor: any;
   editorSetup: any;
 
+  //Parameters
+  mode: string;
+  folderId: string;
+
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      switch (params.mode) {
+    this.route.params.subscribe(params => {      
+      switch(params.mode) {
         case 'all':
-          this.loadAllNotes()
-        case 'fav':
-          //this.users = this.favUsers;
-          break;
+          this.mode = 'all'
+          break
         case 'folder':
-          this.loadNotes(params.folderId)
-          break;
+          this.mode = 'folder'
+          this.folderId = params.folderId
+          break
+        default:
+          this.mode = 'all'
       }
+      this.loadData();                       
     })
 
     const parent = this;
@@ -73,12 +83,27 @@ export class NotesListWithEditorComponent implements OnInit {
   constructor(iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     private route: ActivatedRoute,
-    private localNoteService: LocalNoteService
+    private localNoteService: LocalNoteService,
+    private authService: AuthService,
+    private syncService: SyncService
   ) {
     // To avoid XSS attacks, the URL needs to be trusted from inside of your application.
     const avatarsSafeUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/avatars.svg');
 
     iconRegistry.addSvgIconSetInNamespace('avatars', avatarsSafeUrl);
+  }
+
+  loadData() {
+    switch (this.mode) {
+      case 'all':
+        this.loadAllNotes()
+      case 'fav':
+        this.loadFavorites();          
+        break;
+      case 'folder':
+        this.loadNotes(this.folderId)
+        break;
+    }
   }
 
   async readFolderToLinkSelectionMenu(folder: Folder, items: LinkTreeItem[]) {
@@ -144,10 +169,16 @@ export class NotesListWithEditorComponent implements OnInit {
 
   async loadAllNotes() {
     this.notes = await this.localNoteService.getAllNotes(false)
+    this.currentFolder = await this.localNoteService.getRootFolder()
+  }
+
+  async loadFavorites() {
+
   }
   
   async loadNotes(folderId: string) {
     this.notes = await this.localNoteService.loadNotesByFolder(folderId)
+    this.currentFolder = await this.localNoteService.loadFolderById(folderId)
   }
 
   openNote(note: Note) {
@@ -161,10 +192,27 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
 
-  onNewNote() {
-
+  async onNewNote() {
+    this.selectedNote = await this.createNote()    
+    this.openNote(this.selectedNote)
+    this.notes.push(this.selectedNote)
   }
   
+  async createNote() : Promise<Note> {
+    let note = new Note()
+    note.title = ''
+    note.text = ''
+    note.id = uuid()
+    note.folderId = this.currentFolder.id
+    note.level = this.currentFolder.level + 1
+    note.userId = this.authService.userId
+    let now = new Date()
+    note.createdAt = now
+    note.updatedAt = now    
+    await this.localNoteService.uploadNote(note)
+    return Promise.resolve(note)
+  }
+
   onSaveNote() {   
     if (this.selectedNote == null) {
       return
@@ -174,11 +222,18 @@ export class NotesListWithEditorComponent implements OnInit {
     this.localNoteService.updateNote(this.selectedNote);         
   }
 
-  searchRepositoryKeyDown(event) {
+  async onDoSync() {
+    // Make sync
+    await this.syncService.doSync();
+
+    await this.loadData();
+  }
+
+  searchNotesKeyDown(event) {
 
   }
 
-  searchRepository() {
+  searchNotes() {
 
   }
 }

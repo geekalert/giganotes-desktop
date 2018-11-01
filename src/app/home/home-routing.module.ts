@@ -15,8 +15,7 @@ const homeRoutes: Routes = [
     children: [
       {
         path: '',
-        component: NotesListWithEditorComponent,
-        data: { mode: 'all' }
+        component: NotesListWithEditorComponent
       },
       {
         path: 'list',

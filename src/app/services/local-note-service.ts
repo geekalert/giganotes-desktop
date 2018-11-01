@@ -114,8 +114,8 @@ export class LocalNoteService {
 
     // Shold be used in offline mode only.
     async createRootFolderIfNotExists() {
-        let id = await this.getRootFolderId()
-        if (id == null) {
+        let rootFolder= await this.getRootFolder()
+        if (rootFolder == null) {
             let folder = new Folder()
             folder.title = 'Root'
             folder.level = 0
@@ -127,14 +127,14 @@ export class LocalNoteService {
         }
     }
 
-    async getRootFolderId(): Promise<string> {
+    async getRootFolder(): Promise<Folder> {
         const rootIdQueryResults = await this.dbService.all('SELECT id FROM folder WHERE parentId IS NULL and title="Root" and userId = ?', [this.authService.userId])
 
         if (rootIdQueryResults.length === 0) {
             return Promise.resolve(null)
         }
 
-        return rootIdQueryResults.item(0).id
+        return rootIdQueryResults.item(0)
     }
 
     async loadFolderById(id: string): Promise<Folder> {
@@ -305,7 +305,7 @@ export class LocalNoteService {
         return Promise.resolve(folders)
     }
 
-    async searchNotes(query: string): Promise<Note[]> {
+    async searchNotes(query: string, folderId: string): Promise<Note[]> {
         const sqlQuery = 'SELECT id FROM note WHERE deletedAt IS NULL AND (title LIKE "%' + query + '%" OR text LIKE "%' + query + '%") AND userId = ?'
         const noteResults = await this.dbService.all(sqlQuery, [this.authService.userId])
 
