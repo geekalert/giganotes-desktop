@@ -16,8 +16,8 @@
   <div fxFlex="30" resizable [sizerBarPosition]="2">
     <div fxLayout="column" style="height:100%;">
       <mat-form-field color="primary" floatLabel="never" style="width: 100%;">
-        <input #searchHelpPanelContainer matInput [(ngModel)]="searchFor" #searchInput type="search" placeholder="Search notes..."
-          (keydown)="searchNotesKeyDown($event);">
+        <input #searchHelpPanelContainer matInput [(ngModel)]="searchFilter" #searchInput type="search" placeholder="Search notes..."
+          (keyup)="searchNotesKeyUp($event);">
         <button mat-button matSuffix mat-icon-button aria-label="Search notes" (click)="searchNotes();">
           <mat-icon>search</mat-icon>
         </button>

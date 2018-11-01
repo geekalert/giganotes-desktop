@@ -306,9 +306,15 @@ export class LocalNoteService {
     }
 
     async searchNotes(query: string, folderId: string): Promise<Note[]> {
-        const sqlQuery = 'SELECT id FROM note WHERE deletedAt IS NULL AND (title LIKE "%' + query + '%" OR text LIKE "%' + query + '%") AND userId = ?'
-        const noteResults = await this.dbService.all(sqlQuery, [this.authService.userId])
-
+        let sqlQuery = 'SELECT id FROM note WHERE deletedAt IS NULL AND (title LIKE "%' + query + '%" OR text LIKE "%' + query + '%") AND userId = ?'
+        let noteResults;
+        
+        if (folderId == null) {            
+            noteResults = await this.dbService.all(sqlQuery, [this.authService.userId])
+        } else {
+            sqlQuery += ' AND folderId = ?'
+            noteResults = await this.dbService.all(sqlQuery, [this.authService.userId, folderId])
+        }
         const notes = Array<Note>();
         for (let i = 0; i < noteResults.length; i++) {
             const entry = noteResults.item(i);

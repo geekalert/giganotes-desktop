@@ -20,7 +20,7 @@ export class NotesListWithEditorComponent implements OnInit {
 
   INTERNAL_LINK_PREFIX = 'local:';
 
-  public searchFor: string;
+  public searchFilter: string;
   notes = Array<Note>();
   selectedNote = new Note();
   currentFolder : Folder;
@@ -235,11 +235,15 @@ export class NotesListWithEditorComponent implements OnInit {
     return this.syncService.isSyncing();
   }
 
-  searchNotesKeyDown(event) {
-
+  searchNotesKeyUp(event) {
+    this.searchNotes()
   }
 
-  searchNotes() {
-
+  async searchNotes() {
+    if (this.mode == 'all') {
+      this.notes = await this.localNoteService.searchNotes(this.searchFilter, null)      
+    } else if (this.mode == 'folder') {
+      this.notes = await this.localNoteService.searchNotes(this.searchFilter, this.currentFolder.id)      
+    }
   }
 }

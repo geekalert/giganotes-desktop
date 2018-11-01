@@ -19,6 +19,7 @@ import { SettingsComponent } from './home/settings/settings.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { AddFolderDialogComponent } from './home/add-folder-dialog/add-folder-dialog.component';
+import { RenameFolderDialogComponent } from './home/rename-folder-dialog/rename-folder-dialog.component';
 
 import { HomeRoutingModule } from './home/home-routing.module';
 
@@ -73,7 +74,6 @@ import {
   MatToolbarModule,
   MatTreeModule
 } from '@angular/material';
-import { RenameFolderDialogComponent } from './home/rename-folder-dialog/rename-folder-dialog.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +82,7 @@ import { RenameFolderDialogComponent } from './home/rename-folder-dialog/rename-
     NotesListWithEditorComponent,
     NavigationTreeComponent,
     AddFolderDialogComponent,
+    RenameFolderDialogComponent,
     SettingsComponent,
     LoginComponent,
     HomeComponent
