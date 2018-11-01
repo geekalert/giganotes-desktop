@@ -73,6 +73,7 @@ import {
   MatToolbarModule,
   MatTreeModule
 } from '@angular/material';
+import { RenameFolderDialogComponent } from './home/rename-folder-dialog/rename-folder-dialog.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import {
   ],
   entryComponents:
     [
-      AddFolderDialogComponent
+      AddFolderDialogComponent,
+      RenameFolderDialogComponent
     ],
   imports: [
     BrowserModule,

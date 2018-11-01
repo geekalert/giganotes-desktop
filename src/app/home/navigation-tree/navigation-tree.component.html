@@ -9,8 +9,8 @@
 
       <mat-menu #appMenu="matMenu">
         <button mat-menu-item (click)="onAddFolder()">Add folder</button>
-        <button mat-menu-item>Rename</button>
-        <button mat-menu-item>Help</button>
+        <button mat-menu-item (click)="onRenameFolder(item)">Rename</button>
+        <button mat-menu-item (click)="onDeleteFolder(item)">Delete</button>
       </mat-menu>
 
       <button mat-icon-button [matMenuTriggerFor]="appMenu" [style.display]=" !item.showMenuButton || !item.isSelected ?'none':'inherit'">

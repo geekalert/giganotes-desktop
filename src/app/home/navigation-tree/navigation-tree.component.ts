@@ -45,4 +45,12 @@ export class NavigationTreeComponent implements OnInit {
     });
   }
 
+  onRenameFolder(item: TreeItem) {
+
+  }
+
+  onDeleteFolder(item: TreeItem) {
+
+  }
+
 }
