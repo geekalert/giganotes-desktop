@@ -10,7 +10,7 @@
       <button *ngIf="true" mat-button [matMenuTriggerFor]="menu">
         <mat-icon>person</mat-icon>
         <span class="icon-spacer"></span>
-        <span>User</span>
+        <span>{{authService.email}}</span>
         <span class="icon-spacer"></span>
         <mat-icon>arrow_drop_down</mat-icon>
       </button>
@@ -20,20 +20,20 @@
           <span class="icon-spacer"></span>
           <mat-icon>exit_to_app</mat-icon>
         </button>
-    
+
       </mat-menu>
     </mat-toolbar-row>
   </mat-toolbar>
 
-    <div class="content" style="height: 100%">
-      
-      <div resizable [sizerBarPosition]="2" fxFlex="15">
-        <app-navigation-tree [items]="items"></app-navigation-tree>
-      </div>
-  
+  <div class="content" style="height: 100%">
 
-          <div fxFlex="85" fxLayout="column">
-            <router-outlet></router-outlet>
-          </div>
-      </div>
+    <div resizable [sizerBarPosition]="2" fxFlex="15">
+      <app-navigation-tree [items]="items"></app-navigation-tree>
     </div>
+
+
+    <div fxFlex="85" fxLayout="column">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

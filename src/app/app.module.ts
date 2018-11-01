@@ -18,6 +18,7 @@ import { NavigationTreeComponent } from './home/navigation-tree/navigation-tree.
 import { SettingsComponent } from './home/settings/settings.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
+import { AddFolderDialogComponent } from './home/add-folder-dialog/add-folder-dialog.component';
 
 import { HomeRoutingModule } from './home/home-routing.module';
 
@@ -28,7 +29,7 @@ import { LoggerService } from './services/logger-service';
 import { ElectronService } from './providers/electron.service';
 import { LocalNoteService } from './services/local-note-service';
 import { RemoteNoteService } from './services/remote-note-service';
-import { SyncService} from './services/sync-service';
+import { SyncService } from './services/sync-service';
 
 import { AuthGuard } from './guards/auth-guard';
 import { AuthService } from './services/auth-service';
@@ -79,10 +80,15 @@ import {
     ResizableDirective,
     NotesListWithEditorComponent,
     NavigationTreeComponent,
+    AddFolderDialogComponent,
     SettingsComponent,
     LoginComponent,
     HomeComponent
   ],
+  entryComponents:
+    [
+      AddFolderDialogComponent
+    ],
   imports: [
     BrowserModule,
     FormsModule,
