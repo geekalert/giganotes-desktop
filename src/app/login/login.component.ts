@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { MatIconRegistry } from '@angular/material';
 import { AuthService } from '../services/auth-service';
 import { LoggerService } from '../services/logger-service';
 
@@ -9,6 +9,7 @@ import { GoogleLoginProvider } from '../services/social-auth/google-login-provid
 import { LocalNoteService } from '../services/local-note-service';
 
 import { Folder } from './../model/folder';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     moduleId: module.id,
@@ -22,12 +23,17 @@ export class LoginComponent implements OnInit {
     imgPath='assets/logo.png';
 
     constructor(
+        private iconRegistry: MatIconRegistry,
+        private sanitizer: DomSanitizer,
         private route: ActivatedRoute,
         private router: Router,
         private authService: AuthService,
         private noteService: LocalNoteService,
         private socialAuthService: SocialAuthService,
         private loggerService: LoggerService) {
+        
+        const googleIconUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/google.svg');
+        iconRegistry.addSvgIcon('google-colored', googleIconUrl);            
     }
 
     ngOnInit() {

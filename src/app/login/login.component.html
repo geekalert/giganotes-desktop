@@ -1,7 +1,60 @@
-<div class="login-container bg-light">
+<div class="login-container">
   <div class="login-box">
     <img [src]="imgPath" />
-    <div class="container">
+
+    <mat-tab-group style="margin-top: 20px">
+      <mat-tab label="Sign in">
+        <mat-card>
+          <mat-card-title>Sign in</mat-card-title>
+          <mat-card-content>
+              <div fxLayout="column" fxLayoutAlign="center">
+                  <form>
+                    <mat-form-field class="full-width">   
+                        <mat-label>Email</mat-label>
+                        <input  matInput  placeholder="Email" name="email">                 
+                    </mat-form-field>
+            
+                    <mat-form-field class="full-width">   
+                        <mat-label>Password</mat-label>
+                        <input  matInput  placeholder="Password" name="password">                 
+                    </mat-form-field> 
+                    
+                    <button mat-raised-button style="margin-top: 20px" type="submit"> Log In </button>                    
+                  </form>
+                </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-tab>
+
+      <mat-tab label="Register">
+          <mat-card>
+            <mat-card-title>Registration</mat-card-title>
+            <mat-card-content>
+                <div fxLayout="column" fxLayoutAlign="center">
+                    <form>
+                        <mat-form-field class="full-width">   
+                            <mat-label>Email</mat-label>
+                            <input  matInput  placeholder="Email" name="email">                 
+                        </mat-form-field>
+                
+                        <mat-form-field class="full-width">   
+                            <mat-label>Password</mat-label>
+                            <input  matInput  placeholder="Password" name="password">                 
+                        </mat-form-field> 
+                        
+                        <button mat-raised-button style="margin-top: 20px" type="submit"> Log In </button>                    
+                      </form>
+                </div>
+            </mat-card-content>
+          </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+    
+    <button mat-button>
+        <mat-icon svgIcon="google-colored"></mat-icon> Sign in with google
+      </button>
+
+<!--     <div class="container">
       <div class="card col-md-6 mt-3 mx-auto">
         <div style="margin-top:20px;">
           <a class="btn btn-block btn-social btn-google" (click)="signInWithGoogle()">
@@ -54,6 +107,6 @@
 
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
