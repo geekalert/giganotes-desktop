@@ -32,6 +32,7 @@ export class NotesListWithEditorComponent implements OnInit {
   folderId: string;
 
   ngOnInit() {
+
     this.route.params.subscribe(params => {      
       switch(params.mode) {
         case 'all':
@@ -78,6 +79,7 @@ export class NotesListWithEditorComponent implements OnInit {
       }
     };
 
+    this.onDoSync();
   }
 
   constructor(iconRegistry: MatIconRegistry,
