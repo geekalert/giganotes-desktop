@@ -229,6 +229,10 @@ export class NotesListWithEditorComponent implements OnInit {
     await this.loadData();
   }
 
+  isSyncing() {
+    return this.syncService.isSyncing();
+  }
+
   searchNotesKeyDown(event) {
 
   }

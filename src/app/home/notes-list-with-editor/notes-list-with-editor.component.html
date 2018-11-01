@@ -6,7 +6,7 @@
     <mat-icon>favorite</mat-icon>Add to favorites
   </button>
   <button mat-button (click)="onDoSync()">
-    <mat-icon>sync</mat-icon>Syncronize
+    <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>Syncronize
   </button>  
 </div>
 
