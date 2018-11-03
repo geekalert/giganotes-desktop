@@ -11,14 +11,22 @@
                   <form (ngSubmit)="login()">
                     <mat-form-field class="full-width">   
                         <mat-label>Email</mat-label>
-                        <input  matInput  placeholder="Email" name="email" [(ngModel)]="signInModel.username" #username="ngModel">   
-                        <mat-icon matSuffix>email</mat-icon>              
+                        <input  matInput  placeholder="Email" name="email" [(ngModel)]="signInModel.username" #username="ngModel" required email>   
+                        <mat-icon matSuffix>email</mat-icon>        
+                        
+                        <mat-error *ngIf="!username.valid">
+                          E-mail is required and should be in correct format
+                        </mat-error>                        
                     </mat-form-field>
             
                     <mat-form-field class="full-width">   
                         <mat-label>Password</mat-label>
-                        <input  matInput  placeholder="Password" name="password" [(ngModel)]="signInModel.password" #password="ngModel">
-                        <mat-icon matSuffix>lock</mat-icon>                 
+                        <input  matInput  placeholder="Password" name="password" [(ngModel)]="signInModel.password" #password="ngModel" required minlength="6">
+                        <mat-icon matSuffix>lock</mat-icon>  
+                        
+                        <mat-error *ngIf="!password.valid">
+                          Password is required and should be minimum 6 characters
+                        </mat-error>                         
                     </mat-form-field> 
                     
                     <button mat-raised-button style="margin-top: 20px" type="submit"> Log In </button>                    
@@ -41,17 +49,25 @@
                     <form (ngSubmit)="register()">
                         <mat-form-field class="full-width">   
                             <mat-label>Email</mat-label>
-                            <input  matInput  placeholder="Email" name="email" >   
-                            <mat-icon matSuffix>email</mat-icon>              
+                            <input  matInput  placeholder="Email" name="email" required email>   
+                            <mat-icon matSuffix>email</mat-icon>   
+                            
+                            <mat-error *ngIf="!username.valid">
+                              E-mail is required and should be in correct format
+                            </mat-error>                            
                         </mat-form-field>
                 
                         <mat-form-field class="full-width">   
                             <mat-label>Password</mat-label>
-                            <input  matInput  placeholder="Password" name="password"> 
-                            <mat-icon matSuffix>lock</mat-icon>                 
+                            <input  matInput  placeholder="Password" name="password" required> 
+                            <mat-icon matSuffix>lock</mat-icon>    
+                            
+                            <mat-error *ngIf="!password.valid">
+                              Password is required and should be minimum 6 characters
+                            </mat-error>                              
                         </mat-form-field> 
                         
-                        <button mat-raised-button style="margin-top: 20px" type="submit"> Log In </button>                    
+                        <button mat-raised-button style="margin-top: 20px" type="submit">Register</button>                    
                       </form>
                 </div>
             </mat-card-content>
