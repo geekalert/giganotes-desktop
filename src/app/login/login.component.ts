@@ -17,8 +17,9 @@ import { DomSanitizer } from '@angular/platform-browser';
     styleUrls: ['login.component.scss']
 })
 export class LoginComponent implements OnInit {
-    model: any = {};
-    loading = false;
+    signInModel: any = {};
+    registerModel: any = {};
+    isLoading = false;
     errorMessage = "";
     imgPath='assets/logo.png';
 
@@ -57,7 +58,7 @@ export class LoginComponent implements OnInit {
             if (err.status === 0) {
                 this.errorMessage = "Cannot connect to server. Please check your connection.";
             }
-            this.loading = false;
+            this.isLoading = false;
         }
 
     }
@@ -83,11 +84,11 @@ export class LoginComponent implements OnInit {
     }
 
     async login() {
-        this.loading = true;
+        this.isLoading = true;
         this.errorMessage = "";
 
         try {
-            const result = await this.authService.login({ email: this.model.username, password: this.model.password })
+            const result = await this.authService.login({ email: this.signInModel.username, password: this.signInModel.password })
             await this.saveFolder(result)
             this.router.navigate(['home']);
         } catch (err) {
@@ -98,7 +99,47 @@ export class LoginComponent implements OnInit {
             if (err.status == 0) {
                 this.errorMessage = "Cannot connect to server. Please check your connection.";
             }
-            this.loading = false;
+            this.isLoading = false;
+        };
+    }
+
+
+    async register() {
+        this.isLoading = true;
+        try {
+            const result = await this.authService.signup({email : this.registerModel.username, password: this.registerModel.password})
+
+            if (result.error != null)  {
+                if (result.error == "USER_EXISTS") {
+                    this.errorMessage = "User already exists.";
+                }
+                this.isLoading = false;
+            } else {
+
+                const folder = new Folder();
+                folder.id = result.rootFolder.id;
+                folder.title = result.rootFolder.title;
+                folder.parentId = result.rootFolder.parentId;
+                folder.level = result.rootFolder.level;
+                folder.userId = result.rootFolder.userId;
+                folder.createdAt = new Date(result.rootFolder.createdAt)
+                folder.updatedAt = new Date(result.rootFolder.updatedAt)
+
+                await this.noteService.uploadFolder(folder)
+
+                this.router.navigate(['home']);
+            }
+
+        } catch(err) {
+            if (err.status === 401) {
+                this.errorMessage = "Incorrect login or password.";
+            }
+
+            if (err.status === 0) {
+                this.errorMessage = "Cannot connect to server. Please check your connection.";
+            }
+
+            this.isLoading = false;
         };
     }
 

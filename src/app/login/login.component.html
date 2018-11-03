@@ -8,21 +8,28 @@
           <mat-card-title>Sign in</mat-card-title>
           <mat-card-content>
               <div fxLayout="column" fxLayoutAlign="center">
-                  <form>
+                  <form (ngSubmit)="login()">
                     <mat-form-field class="full-width">   
                         <mat-label>Email</mat-label>
-                        <input  matInput  placeholder="Email" name="email">                 
+                        <input  matInput  placeholder="Email" name="email" [(ngModel)]="signInModel.username" #username="ngModel">   
+                        <mat-icon matSuffix>email</mat-icon>              
                     </mat-form-field>
             
                     <mat-form-field class="full-width">   
                         <mat-label>Password</mat-label>
-                        <input  matInput  placeholder="Password" name="password">                 
+                        <input  matInput  placeholder="Password" name="password" [(ngModel)]="signInModel.password" #password="ngModel">
+                        <mat-icon matSuffix>lock</mat-icon>                 
                     </mat-form-field> 
                     
                     <button mat-raised-button style="margin-top: 20px" type="submit"> Log In </button>                    
                   </form>
                 </div>
           </mat-card-content>
+
+          <mat-card-footer *ngIf="isLoading">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </mat-card-footer>
+  
         </mat-card>
       </mat-tab>
 
@@ -31,21 +38,27 @@
             <mat-card-title>Registration</mat-card-title>
             <mat-card-content>
                 <div fxLayout="column" fxLayoutAlign="center">
-                    <form>
+                    <form (ngSubmit)="register()">
                         <mat-form-field class="full-width">   
                             <mat-label>Email</mat-label>
-                            <input  matInput  placeholder="Email" name="email">                 
+                            <input  matInput  placeholder="Email" name="email" >   
+                            <mat-icon matSuffix>email</mat-icon>              
                         </mat-form-field>
                 
                         <mat-form-field class="full-width">   
                             <mat-label>Password</mat-label>
-                            <input  matInput  placeholder="Password" name="password">                 
+                            <input  matInput  placeholder="Password" name="password"> 
+                            <mat-icon matSuffix>lock</mat-icon>                 
                         </mat-form-field> 
                         
                         <button mat-raised-button style="margin-top: 20px" type="submit"> Log In </button>                    
                       </form>
                 </div>
             </mat-card-content>
+
+            <mat-card-footer *ngIf="isLoading">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </mat-card-footer>            
           </mat-card>
       </mat-tab>
     </mat-tab-group>

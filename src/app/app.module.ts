@@ -72,7 +72,8 @@ import {
   MatSlideToggleModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTreeModule
+  MatTreeModule,  
+  MatProgressBarModule
 } from '@angular/material';
 
 @NgModule({
@@ -118,6 +119,7 @@ import {
     MatTabsModule,
     MatToolbarModule,
     MatTreeModule,
+    MatProgressBarModule,
     FlexLayoutModule,
     EditorModule,
     HomeRoutingModule,
