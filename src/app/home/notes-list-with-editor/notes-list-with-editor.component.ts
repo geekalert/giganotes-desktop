@@ -9,6 +9,8 @@ import { LinkTreeItem } from '../../model/ui/linktreeitem';
 import { v4 as uuid } from 'uuid';
 import { AuthService } from '../../services/auth-service';
 import { SyncService } from '../../services/sync-service';
+import { EventBusService } from '../../services/event-bus-service';
+import { NavigateEvent } from '../../model/events/navigate-event';
 
 @Component({
   selector: 'app-notes-list-with-editor',
@@ -45,7 +47,7 @@ export class NotesListWithEditorComponent implements OnInit {
         default:
           this.mode = 'all'
       }
-      this.loadData();                       
+      this.loadData();          
     })
 
     const parent = this;
@@ -87,7 +89,8 @@ export class NotesListWithEditorComponent implements OnInit {
     private route: ActivatedRoute,
     private localNoteService: LocalNoteService,
     private authService: AuthService,
-    private syncService: SyncService
+    private syncService: SyncService,
+    private eventBusService: EventBusService
   ) {
     // To avoid XSS attacks, the URL needs to be trusted from inside of your application.
     const avatarsSafeUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/avatars.svg');
@@ -171,7 +174,8 @@ export class NotesListWithEditorComponent implements OnInit {
 
   async loadAllNotes() {
     this.notes = await this.localNoteService.getAllNotes(false)
-    this.currentFolder = await this.localNoteService.getRootFolder()
+    this.currentFolder = await this.localNoteService.getRootFolder()    
+    this.selectFirstNote()
   }
 
   async loadFavorites() {
@@ -181,6 +185,14 @@ export class NotesListWithEditorComponent implements OnInit {
   async loadNotes(folderId: string) {
     this.notes = await this.localNoteService.loadNotesByFolder(folderId)
     this.currentFolder = await this.localNoteService.loadFolderById(folderId)
+    this.selectFirstNote()  
+  }
+
+  selectFirstNote() {
+    if (this.notes.length > 0) {
+      this.selectedNote = this.notes[0];
+      this.openNote(this.selectedNote)
+    }
   }
 
   openNote(note: Note) {
@@ -246,4 +258,16 @@ export class NotesListWithEditorComponent implements OnInit {
       this.notes = await this.localNoteService.searchNotes(this.searchFilter, this.currentFolder.id)      
     }
   }
+
+  async handleEditorClick(event: any) {
+    const element = event.event.srcElement;
+    if (element.tagName === 'A') {
+      const hrefValue = element.attributes['href'].value;
+      if (hrefValue.indexOf(this.INTERNAL_LINK_PREFIX) !== -1) {
+        const id = hrefValue.substring(6);     
+        const event = new NavigateEvent('1')
+        this.eventBusService.sendMessage(event)   
+      }
+    }
+  }  
 }

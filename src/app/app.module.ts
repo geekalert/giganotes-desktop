@@ -78,6 +78,7 @@ import {
   MatTreeModule,  
   MatProgressBarModule
 } from '@angular/material';
+import { EventBusService } from './services/event-bus-service';
 
 @NgModule({
   declarations: [
@@ -136,6 +137,7 @@ import {
     ElectronService,
     AuthGuard,
     AuthService,
+    EventBusService,
     Storage,
     SocialAuthService,
     {

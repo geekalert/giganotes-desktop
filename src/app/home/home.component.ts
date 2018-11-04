@@ -5,6 +5,8 @@ import { AuthService } from '../services/auth-service';
 import { SocialAuthService } from '../services/social-auth/social-auth-service';
 import { LocalNoteService } from '../services/local-note-service';
 import { RemoteNoteService } from '../services/remote-note-service';
+import { SyncService } from '../services/sync-service';
+import { EventBusService } from '../services/event-bus-service';
 
 @Component({
   selector: 'app-home',
@@ -18,19 +20,26 @@ export class HomeComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
     private authService: AuthService,
+    private syncService: SyncService,
     private socialAuthService: SocialAuthService,
     private localNoteService: LocalNoteService,
     private remoteNoteService: RemoteNoteService,
+    private eventBusService: EventBusService,
     private router: Router, ) {
 
   }
 
   ngOnInit() {
     this.init();
+
+    this.eventBusService.getMessages().subscribe(e => {
+      console.log(e);
+    })
   }
 
   async init() {
-    await this.loadItems();    
+    await this.loadItems();
+    await this.syncService.doSync();    
   }
 
   async logout() {
