@@ -29,45 +29,45 @@ export class RemoteNoteService {
 
     async uploadNote(note: Note) {
         await this.setClientID()
-        await this.authHttp.post(AppConfig.apiUrl + `api/upload-note`, note, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
+        await this.authHttp.post(AppConfig.scheme + AppConfig.apiUrl + `/api/upload-note`, note, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
     }
 
     async updateNote(note: Note) {
         await this.setClientID()
-        await this.authHttp.post(AppConfig.apiUrl + `api/update-note`, note, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
+        await this.authHttp.post(AppConfig.scheme + AppConfig.apiUrl + `/api/update-note`, note, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
     }
 
     async uploadFolder(folder: Folder) {
         await this.setClientID()
-        await this.authHttp.post(AppConfig.apiUrl + `api/upload-folder`, folder, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
+        await this.authHttp.post(AppConfig.scheme + AppConfig.apiUrl + `/api/upload-folder`, folder, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
     }
 
     async updateFolder(folder: Folder) {
         await this.setClientID()
-        await this.authHttp.post(AppConfig.apiUrl + `api/update-folder`, folder, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
+        await this.authHttp.post(AppConfig.scheme + AppConfig.apiUrl + `/api/update-folder`, folder, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
     }
 
     async loadNoteById(id: string): Promise<Note> {
         await this.setClientID()
-        const note = await this.authHttp.get<Note>(AppConfig.apiUrl + `api/note/` + id, { responseType: 'json', observe: 'body', headers: this.headers })
+        const note = await this.authHttp.get<Note>(AppConfig.scheme + AppConfig.apiUrl + `/api/note/` + id, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
         return Promise.resolve(note)
     }
 
     async removeNote(id: string) {
         await this.setClientID()
-        await this.authHttp.get(AppConfig.apiUrl + `api/remove-note/` + id, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
+        await this.authHttp.get(AppConfig.scheme + AppConfig.apiUrl + `/api/remove-note/` + id, { responseType: 'json', observe: 'body', headers: this.headers }).toPromise();
     }
 
     async removeFolder(id: string) {
         await this.setClientID()
-        await this.authHttp.get(AppConfig.apiUrl + `api/remove-folder/` + id, { responseType: 'json', observe: 'body', headers: this.headers })
+        await this.authHttp.get(AppConfig.scheme + AppConfig.apiUrl + `/api/remove-folder/` + id, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
     }
 
     async loadFolderById(id: string): Promise<Folder> {
         await this.setClientID()
-        let requestUrl = AppConfig.apiUrl + `api/folder/` + id
+        let requestUrl = AppConfig.scheme + AppConfig.apiUrl + `/api/folder/` + id
 
         const folder = await this.authHttp.get<Folder>(requestUrl, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
@@ -77,14 +77,14 @@ export class RemoteNoteService {
 
     async getLatestSyncData(includeDeleted: boolean): Promise<SyncDataHolder> {
         await this.setClientID()
-        const holder = await this.authHttp.get<SyncDataHolder>(AppConfig.apiUrl + `api/latest-sync-data?includeDeleted=` + includeDeleted, { responseType: 'json', observe: 'body', headers: this.headers })
+        const holder = await this.authHttp.get<SyncDataHolder>(AppConfig.scheme + AppConfig.apiUrl + `/api/latest-sync-data?includeDeleted=` + includeDeleted, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
         return Promise.resolve(holder);
     }
 
     async getAllFolders(includeDeleted: boolean): Promise<Folder[]> {
         await this.setClientID()
-        const folders = await this.authHttp.get<Folder[]>(AppConfig.apiUrl + `api/folders?includeDeleted=` + includeDeleted, { responseType: 'json', observe: 'body', headers: this.headers })
+        const folders = await this.authHttp.get<Folder[]>(AppConfig.scheme + AppConfig.apiUrl + `/api/folders?includeDeleted=` + includeDeleted, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
 
         return Promise.resolve(folders);
@@ -92,14 +92,14 @@ export class RemoteNoteService {
 
     async getNotesInfo(): Promise<Note[]> {
         await this.setClientID()
-        const notes = await this.authHttp.get<Note[]>(AppConfig.apiUrl + `api/notesinfo`, { responseType: 'json', observe: 'body', headers: this.headers })
+        const notes = await this.authHttp.get<Note[]>(AppConfig.scheme + AppConfig.apiUrl + `/api/notesinfo`, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
         return Promise.resolve(notes);
     }
 
     async searchNotes(query: string) {
         await this.setClientID()
-        const notes = await this.authHttp.get<Note[]>(AppConfig.apiUrl + `api/search-notes?query=` + query, { responseType: 'json', observe: 'body', headers: this.headers })
+        const notes = await this.authHttp.get<Note[]>(AppConfig.scheme + AppConfig.apiUrl + `/api/search-notes?query=` + query, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
 
         return Promise.resolve(notes)

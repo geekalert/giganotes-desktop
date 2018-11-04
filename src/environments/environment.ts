@@ -2,5 +2,6 @@ export const AppConfig = {
   production: false,
   environment: 'LOCAL',
   clientType: '1',
-  apiUrl: "http://localhost:8081/"    
+  apiUrl: "localhost:8081",
+  scheme: 'http://'
 };

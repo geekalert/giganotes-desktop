@@ -41,6 +41,8 @@ import { Storage } from './services/storage';
 
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 
+import { AppConfig } from '../environments/environment';
+
 export function provideSocialConfig(http: HttpClient) {
   return new AuthServiceConfig([
     {
@@ -54,7 +56,8 @@ export function jwtOptionsFactory(storage: Storage) {
   return {
     tokenGetter: () => {
       return storage.get('jwt');
-    }
+    },
+    whitelistedDomains: [AppConfig.apiUrl]
   }
 }
 
