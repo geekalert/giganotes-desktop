@@ -6,6 +6,7 @@ export class TreeItem {
     public subItems = Array<TreeItem>();
     public parent: TreeItem;
     public isSelected = false;
+    public expanded = false;
     public onClick: (item: any) => void;
 
     clearSelectionRecursive() {

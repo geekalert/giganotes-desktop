@@ -8,6 +8,8 @@ import { MatDialogRef } from '@angular/material';
 })
 export class RenameFolderDialogComponent implements OnInit {
 
+  folderName = '';
+  
   constructor(
     public dialogRef: MatDialogRef<RenameFolderDialogComponent>) {
   }

@@ -1,4 +1,4 @@
-<h2 mat-dialog-title></h2>
+<h2 mat-dialog-title>Add folder</h2>
 
 <mat-dialog-content>
   <mat-form-field>
@@ -8,5 +8,5 @@
 
 <mat-dialog-actions>
   <button class="mat-raised-button" (click)="close()">Close</button>
-  <button class="mat-raised-button mat-primary" (click)="save()">Save</button>
+  <button class="mat-raised-button mat-primary" [mat-dialog-close]="folderName">Add folder</button>
 </mat-dialog-actions>
