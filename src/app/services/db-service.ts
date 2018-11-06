@@ -12,13 +12,16 @@ import * as path from 'path';
 import { InitialMigration } from './migrations/initial-migration-01';
 import { EncryptedNoteMigration } from './migrations/encrypted-note-migration-02';
 import { IMigration } from './migrations/base-migration';
+import { FavoritesMigration } from './migrations/favorites-migration-03';
 
 @Injectable()
 export class DbService {
 
     dbName = 'local.db'
     private db: sqlite.Database = null;
-    migrations : Array<IMigration> = [new InitialMigration(), new EncryptedNoteMigration()]
+    migrations : Array<IMigration> = [new InitialMigration(), 
+        new EncryptedNoteMigration(), 
+        new FavoritesMigration()]
 
     constructor(private loggerService: LoggerService, private electronService : ElectronService) {
     }

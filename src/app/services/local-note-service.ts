@@ -323,4 +323,36 @@ export class LocalNoteService {
 
         return Promise.resolve(notes)
     }
+
+    async getFavoriteNotes(): Promise<Note[]> {
+        let sqlQuery = 'SELECT n.id, n.title, n.text, n.folderId, n.level, n.userId, n.createdAt, n.updatedAt, n.deletedAt FROM note n INNER JOIN favorites f ON n.id = f.noteId AND n.userId = f.userId WHERE deletedAt IS NULL AND n.userId = ?'
+        const results = await this.dbService.all(sqlQuery, [this.authService.userId])
+        
+        const notes = Array<Note>();
+        for (let i = 0; i < results.length; i++) {
+            const entry = results.item(i);
+            const note = new Note();
+            note.id = entry.id;
+            note.title = entry.title;
+            note.text = entry.text;
+            note.folderId = entry.folderId;
+            note.level = entry.level;
+            note.createdAt = new Date(entry.createdAt)
+            note.updatedAt = new Date(entry.updatedAt)
+
+            note.userId = entry.userId
+
+            notes.push(note)            
+        }
+
+        return Promise.resolve(notes)
+    }
+
+    async addToFavorites(noteId: string) {
+        await this.dbService.run('INSERT INTO favorites (noteId, userId) VALUES (?, ?);', [noteId, this.authService.userId]);
+    }
+
+    async removeFromFavorites(noteId: string) {
+        await this.dbService.run('DELETE FROM favorites WHERE noteId = ? AND userId = ?', [noteId, this.authService.userId])
+    }
 }

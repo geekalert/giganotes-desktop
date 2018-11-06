@@ -2,7 +2,7 @@
   <button mat-button (click)="onNewNote()">
     <mat-icon>add</mat-icon>New note
   </button>
-  <button mat-button>
+  <button mat-button (click)="onAddToFavorites()">
     <mat-icon>favorite</mat-icon>Add to favorites
   </button>
   <button mat-button (click)="onDoSync()">
@@ -26,7 +26,7 @@
       <div style="overflow: auto; height:100%;">
         <mat-nav-list>
           <mat-list-item *ngFor="let note of notes" (click)="onNoteClick(note)" [class.list-item-selected]="this.selectedNote == note">
-            <mat-icon matListAvatar svgIcon="avatars:svg-14" class="avatar"></mat-icon>
+            <mat-icon matListIcon class="avatar">description</mat-icon>
             <span *ngIf="note.title.length > 0">{{note.title}}</span>
             <span *ngIf="note.title.length == 0">Untitled note</span>
           </mat-list-item>

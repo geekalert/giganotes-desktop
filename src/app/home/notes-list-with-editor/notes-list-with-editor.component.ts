@@ -40,6 +40,9 @@ export class NotesListWithEditorComponent implements OnInit {
         case 'all':
           this.mode = 'all'
           break
+        case 'fav':
+          this.mode = 'fav'
+          break
         case 'folder':
           this.mode = 'folder'
           this.folderId = params.folderId
@@ -102,9 +105,10 @@ export class NotesListWithEditorComponent implements OnInit {
     switch (this.mode) {
       case 'all':
         this.loadAllNotes()
-      case 'fav':
-        this.loadFavorites();          
         break;
+      case 'fav':      
+        this.loadFavorites();          
+        break;        
       case 'folder':
         this.loadNotes(this.folderId)
         break;
@@ -179,7 +183,8 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   async loadFavorites() {
-
+      this.notes = await this.localNoteService.getFavoriteNotes()
+      this.selectFirstNote()
   }
   
   async loadNotes(folderId: string) {
@@ -273,4 +278,8 @@ export class NotesListWithEditorComponent implements OnInit {
       }
     }
   }  
+
+  async onAddToFavorites() {
+    this.localNoteService.addToFavorites(this.selectedNote.id)
+  }
 }

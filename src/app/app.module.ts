@@ -79,6 +79,7 @@ import {
   MatProgressBarModule
 } from '@angular/material';
 import { EventBusService } from './services/event-bus-service';
+import { DataService } from './services/data-service';
 
 @NgModule({
   declarations: [
@@ -138,6 +139,7 @@ import { EventBusService } from './services/event-bus-service';
     AuthGuard,
     AuthService,
     EventBusService,
+    DataService,
     Storage,
     SocialAuthService,
     {
