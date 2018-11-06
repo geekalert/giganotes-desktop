@@ -27,7 +27,8 @@
         <mat-nav-list>
           <mat-list-item *ngFor="let note of notes" (click)="onNoteClick(note)" [class.list-item-selected]="this.selectedNote == note">
             <mat-icon matListAvatar svgIcon="avatars:svg-14" class="avatar"></mat-icon>
-            <span>{{note.title}}</span>
+            <span *ngIf="note.title.length > 0">{{note.title}}</span>
+            <span *ngIf="note.title.length == 0">Untitled note</span>
           </mat-list-item>
         </mat-nav-list>
       </div>
