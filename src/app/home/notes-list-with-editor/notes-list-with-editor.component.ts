@@ -183,15 +183,18 @@ export class NotesListWithEditorComponent implements OnInit {
   }
   
   async loadNotes(folderId: string) {
+    this.noteEditor.setContent('')
+    this.selectedNote.title = ''
+
     this.notes = await this.localNoteService.loadNotesByFolder(folderId)
     this.currentFolder = await this.localNoteService.loadFolderById(folderId)
     this.selectFirstNote()  
   }
 
   selectFirstNote() {
-    if (this.notes.length > 0) {
+    if (this.notes.length > 0) {      
+      this.openNote(this.notes[0])
       this.selectedNote = this.notes[0];
-      this.openNote(this.selectedNote)
     }
   }
 
