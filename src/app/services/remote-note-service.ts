@@ -51,6 +51,8 @@ export class RemoteNoteService {
         await this.setClientID()
         const note = await this.authHttp.get<Note>(AppConfig.scheme + AppConfig.apiUrl + `/api/note/` + id, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
+        this.setDatesForNote(note)
+        
         return Promise.resolve(note)
     }
 
@@ -72,6 +74,8 @@ export class RemoteNoteService {
         const folder = await this.authHttp.get<Folder>(requestUrl, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
 
+        this.setDatesForFolder(folder)                
+
         return Promise.resolve(folder);
     }
 
@@ -79,6 +83,9 @@ export class RemoteNoteService {
         await this.setClientID()
         const holder = await this.authHttp.get<SyncDataHolder>(AppConfig.scheme + AppConfig.apiUrl + `/api/latest-sync-data?includeDeleted=` + includeDeleted, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
+
+        holder.folders.forEach(folder => this.setDatesForFolder(folder))            
+        holder.notes.forEach(note => this.setDatesForNote(note))            
         return Promise.resolve(holder);
     }
 
@@ -87,6 +94,8 @@ export class RemoteNoteService {
         const folders = await this.authHttp.get<Folder[]>(AppConfig.scheme + AppConfig.apiUrl + `/api/folders?includeDeleted=` + includeDeleted, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
 
+        folders.forEach(folder => this.setDatesForFolder(folder))            
+
         return Promise.resolve(folders);
     }
 
@@ -94,6 +103,8 @@ export class RemoteNoteService {
         await this.setClientID()
         const notes = await this.authHttp.get<Note[]>(AppConfig.scheme + AppConfig.apiUrl + `/api/notesinfo`, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
+            
+        notes.forEach(note => this.setDatesForNote(note))                
         return Promise.resolve(notes);
     }
 
@@ -102,6 +113,23 @@ export class RemoteNoteService {
         const notes = await this.authHttp.get<Note[]>(AppConfig.scheme + AppConfig.apiUrl + `/api/search-notes?query=` + query, { responseType: 'json', observe: 'body', headers: this.headers })
             .toPromise();
 
+        notes.forEach(note => this.setDatesForNote(note))                        
         return Promise.resolve(notes)
     }
+
+    setDatesForFolder(folder : Folder) {
+        folder.createdAt = new Date(folder.createdAt);
+        folder.updatedAt = new Date(folder.updatedAt);
+        if (folder.deletedAt != null) {
+            folder.deletedAt = new Date(folder.deletedAt)
+        }        
+    }
+
+    setDatesForNote(note : Note) {
+        note.createdAt = new Date(note.createdAt);
+        note.updatedAt = new Date(note.updatedAt);
+        if (note.deletedAt != null) {
+            note.deletedAt = new Date(note.deletedAt)
+        }        
+    }    
 }

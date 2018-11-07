@@ -36,6 +36,7 @@ export class SyncService {
             await this.syncNotes(syncData.notes);
             this.subject.next({ type: 'success' })
         } catch (e) {
+            console.log(e)
             this.subject.next({ type: 'error', message: 'Cannot connect to server' })
         } finally {
             this._isSyncing = false;

@@ -36,14 +36,14 @@ export class AuthService {
   }
   
   async login(values: any): Promise<AuthResponse> {
-    const authResponse = await this.http.post<AuthResponse>(AppConfig.apiUrl + `login`, values,
+    const authResponse = await this.http.post<AuthResponse>(AppConfig.scheme + AppConfig.apiUrl + `/login`, values,
                           {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
     await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'internal')
     return authResponse
   }
 
   async loginSocial(values: any): Promise<AuthResponse> {
-    const authResponse = await this.http.post<AuthResponse>(AppConfig.apiUrl + `login-social`, values,
+    const authResponse = await this.http.post<AuthResponse>(AppConfig.scheme + AppConfig.apiUrl + `login-social`, values,
                      {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
     await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'social')
     return authResponse
@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   async signup(values: any): Promise<AuthResponse> {
-    const authResponse = await this.http.post<AuthResponse>(AppConfig.apiUrl + `register`, values,
+    const authResponse = await this.http.post<AuthResponse>(AppConfig.scheme + AppConfig.apiUrl + `/register`, values,
                 {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
     if (authResponse.token != null) {
        await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'internal');
