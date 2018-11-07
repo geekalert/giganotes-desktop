@@ -1,8 +1,8 @@
 <mat-list [ngStyle]="{'margin-left': level + 'px'}">
   <div *ngFor="let item of items">
-    <mat-list-item [class.list-item-selected]="item.isSelected">
+    <mat-list-item [class.list-item-selected]="item.isSelected" (click)="onSelectedItemClick(item)">
       <mat-icon matListIcon>{{item.iconName}}</mat-icon>
-      <span (click)="onSelectedItemClick(item)">{{item.name}}</span>
+      <span>{{item.name}}</span>
       <mat-icon *ngIf="item.subItems?.length > 0" (click)="item.expanded = !item.expanded">{{item.expanded ?
         'expand_less' : 'expand_more'}}</mat-icon>
       <span fxFlex></span>
