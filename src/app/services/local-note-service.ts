@@ -162,7 +162,7 @@ export class LocalNoteService {
     }
 
     async loadNotesByFolder(folderId: string): Promise<Note[]> {
-        const childNotesQuery = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ?'
+        const childNotesQuery = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ? ORDER BY updatedAt DESC'
         const childNotesResults = await this.dbService.all(childNotesQuery, [folderId, this.authService.userId])
 
         const childNotes = new Array<Note>();
@@ -189,7 +189,7 @@ export class LocalNoteService {
     async loadFolderWithActualChildren(id: string): Promise<Folder> {
         const folder = await this.loadFolderById(id)
 
-        const childFoldersQuery = 'SELECT ' + this.allFieldsFolder + ' FROM folder WHERE deletedAt IS NULL AND parentId = ? AND userId = ?'
+        const childFoldersQuery = 'SELECT ' + this.allFieldsFolder + ' FROM folder WHERE deletedAt IS NULL AND parentId = ? AND userId = ? ORDER BY updatedAt DESC'
         const childFoldersResults = await this.dbService.all(childFoldersQuery, [folder.id, this.authService.userId])
 
         if (childFoldersResults.length > 0) {
@@ -210,7 +210,7 @@ export class LocalNoteService {
             folder.children.push(childFolder)
         }
 
-        const childNotesQuery = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ?'
+        const childNotesQuery = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ? ORDER BY updatedAt DESC'
         const childNotesResults = await this.dbService.all(childNotesQuery, [folder.id, this.authService.userId])
 
         if (childNotesResults.length > 0) {
@@ -239,9 +239,9 @@ export class LocalNoteService {
     async getAllNotes(includeDeleted: boolean): Promise<Note[]> {
         var query: string
         if (includeDeleted) {
-            query = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE userId = ?'
+            query = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE userId = ? ORDER BY updatedAt DESC'
         } else {
-            query = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND userId = ?'
+            query = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND userId = ? ORDER BY updatedAt DESC'
         }
         const results = await this.dbService.all(query, [this.authService.userId])
 
@@ -274,9 +274,9 @@ export class LocalNoteService {
     async getAllFolders(includeDeleted: boolean): Promise<Folder[]> {
         var query: string
         if (includeDeleted) {
-            query = 'SELECT ' + this.allFieldsFolder + ' FROM folder WHERE userId = ?'
+            query = 'SELECT ' + this.allFieldsFolder + ' FROM folder WHERE userId = ? ORDER BY updatedAt DESC'
         } else {
-            query = 'SELECT ' + this.allFieldsFolder + ' FROM folder WHERE deletedAt IS NULL AND userId = ?'
+            query = 'SELECT ' + this.allFieldsFolder + ' FROM folder WHERE deletedAt IS NULL AND userId = ? ORDER BY updatedAt DESC'
         }
         const results = await this.dbService.all(query, [this.authService.userId])
 
@@ -310,9 +310,10 @@ export class LocalNoteService {
         let noteResults;
         
         if (folderId == null) {            
+            sqlQuery += ' ORDER BY updatedAt DESC'
             noteResults = await this.dbService.all(sqlQuery, [this.authService.userId])
         } else {
-            sqlQuery += ' AND folderId = ?'
+            sqlQuery += ' AND folderId = ? ORDER BY updatedAt DESC'
             noteResults = await this.dbService.all(sqlQuery, [this.authService.userId, folderId])
         }
         const notes = Array<Note>();
@@ -325,7 +326,7 @@ export class LocalNoteService {
     }
 
     async getFavoriteNotes(): Promise<Note[]> {
-        let sqlQuery = 'SELECT n.id, n.title, n.text, n.folderId, n.level, n.userId, n.createdAt, n.updatedAt, n.deletedAt FROM note n INNER JOIN favorites f ON n.id = f.noteId AND n.userId = f.userId WHERE deletedAt IS NULL AND n.userId = ?'
+        let sqlQuery = 'SELECT n.id, n.title, n.text, n.folderId, n.level, n.userId, n.createdAt, n.updatedAt, n.deletedAt FROM note n INNER JOIN favorites f ON n.id = f.noteId AND n.userId = f.userId WHERE deletedAt IS NULL AND n.userId = ? ORDER BY n.updatedAt DESC'
         const results = await this.dbService.all(sqlQuery, [this.authService.userId])
         
         const notes = Array<Note>();

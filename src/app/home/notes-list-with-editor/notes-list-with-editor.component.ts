@@ -241,6 +241,8 @@ export class NotesListWithEditorComponent implements OnInit {
     }
       
     this.selectedNote.text = this.noteEditor.getContent();
+    
+    this.selectedNote.updatedAt = new Date();
     this.localNoteService.updateNote(this.selectedNote);         
   }
 
