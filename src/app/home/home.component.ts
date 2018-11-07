@@ -16,6 +16,7 @@ import { EventBusService } from '../services/event-bus-service';
 export class HomeComponent implements OnInit {
   title = 'mattest';
   isDarkTheme = true;
+  bannerPath='assets/icon58x64.png';
   items = Array<TreeItem>();
 
   constructor(private route: ActivatedRoute,
@@ -133,9 +134,10 @@ export class HomeComponent implements OnInit {
     myNotesMenuItem.onClick = (item:any) => {
       this.onFolderClick(this, item);
     }
-    myNotesMenuItem.name = "My notes";
+    myNotesMenuItem.name = "Root folder";
     myNotesMenuItem.iconName = 'folder'  
-    myNotesMenuItem.parent = rootItem;  
+    myNotesMenuItem.parent = rootItem;
+    myNotesMenuItem.expanded = true  
 
     this.items.push(myNotesMenuItem)
 
