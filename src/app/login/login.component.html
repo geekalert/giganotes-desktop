@@ -21,7 +21,7 @@
 
                 <mat-form-field class="full-width">
                   <mat-label>Password</mat-label>
-                  <input matInput placeholder="Password" name="password" [(ngModel)]="signInModel.password" #password="ngModel"
+                  <input matInput type="password" placeholder="Password" name="password" [(ngModel)]="signInModel.password" #password="ngModel"
                     required minlength="6">
                   <mat-icon matSuffix>lock</mat-icon>
 
@@ -68,7 +68,7 @@
 
                 <mat-form-field class="full-width">
                   <mat-label>Password</mat-label>
-                  <input matInput placeholder="Password" name="password" [(ngModel)]="registerModel.password" #password="ngModel"
+                  <input matInput type="password" placeholder="Password" name="password" [(ngModel)]="registerModel.password" #password="ngModel"
                     required>
                   <mat-icon matSuffix>lock</mat-icon>
 
