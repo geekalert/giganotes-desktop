@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth-service';
 import { SyncService } from '../../services/sync-service';
 import { EventBusService } from '../../services/event-bus-service';
 import { NavigateEvent } from '../../model/events/navigate-event';
+import { Observable, Subject } from 'rxjs'
 
 @Component({
   selector: 'app-notes-list-with-editor',
@@ -32,6 +33,8 @@ export class NotesListWithEditorComponent implements OnInit {
   //Parameters
   mode: string;
   folderId: string;
+
+  private localEvents = new Subject<any>();
 
   ngOnInit() {
 
@@ -81,6 +84,7 @@ export class NotesListWithEditorComponent implements OnInit {
       ],
       paste_data_images: true, setup: editor => {
         this.noteEditor = editor;
+        this.localEvents.next({type: 'editorReady'})
       }
     };
 
@@ -206,8 +210,17 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   openNote(note: Note) {
-    this.noteEditor.setContent(note.text);
-    this.noteEditor.focus();
+    if (this.noteEditor != null) {
+      this.noteEditor.setContent(note.text);
+      this.noteEditor.focus();
+    } else {
+      this.localEvents.asObservable().subscribe(event => {
+        if (event.type == 'editorReady') {
+          this.noteEditor.setContent(note.text);
+          this.noteEditor.focus();
+        }
+      })
+    }
   }
 
   onNoteClick(note: Note) {
