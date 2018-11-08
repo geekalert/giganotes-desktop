@@ -16,7 +16,7 @@ import { EventBusService } from '../services/event-bus-service';
 export class HomeComponent implements OnInit {
   title = 'mattest';
   isDarkTheme = true;
-  bannerPath='assets/icon58x64.png';
+  bannerPath = 'assets/icon58x64.png';
   items = Array<TreeItem>();
 
   constructor(private route: ActivatedRoute,
@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
 
   async init() {
     await this.loadItems();
-    await this.syncService.doSync();    
+    await this.syncService.doSync();
   }
 
   async logout() {
@@ -107,7 +107,7 @@ export class HomeComponent implements OnInit {
 
     const allNotesMenuItem = new TreeItem();
 
-    allNotesMenuItem.onClick = (item:any) => {
+    allNotesMenuItem.onClick = (item: any) => {
       this.onAllNotesClick(this, item)
     };
     allNotesMenuItem.name = "All notes";
@@ -118,7 +118,7 @@ export class HomeComponent implements OnInit {
     this.items.push(allNotesMenuItem)
 
     const favoritesMenuItem = new TreeItem();
-    favoritesMenuItem.onClick = (item:any) => {
+    favoritesMenuItem.onClick = (item: any) => {
       this.onFavoritesClick(this, item)
     };
     favoritesMenuItem.name = "Favorites";
@@ -127,17 +127,19 @@ export class HomeComponent implements OnInit {
 
     this.items.push(favoritesMenuItem)
 
+    const rootFolder = await this.localNoteService.getRootFolder();
+
     const myNotesMenuItem = new TreeFolderItem();
-    myNotesMenuItem.folderId = '111';
+    myNotesMenuItem.folderId = rootFolder.id;
     myNotesMenuItem.showMenuButton = true;
     myNotesMenuItem.hasAddButton = true;
-    myNotesMenuItem.onClick = (item:any) => {
+    myNotesMenuItem.onClick = (item: any) => {
       this.onFolderClick(this, item);
     }
     myNotesMenuItem.name = "Root folder";
-    myNotesMenuItem.iconName = 'folder'  
+    myNotesMenuItem.iconName = 'folder'
     myNotesMenuItem.parent = rootItem;
-    myNotesMenuItem.expanded = true  
+    myNotesMenuItem.expanded = true
 
     this.items.push(myNotesMenuItem)
 
