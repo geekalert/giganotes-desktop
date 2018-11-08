@@ -5,7 +5,7 @@ import { AuthService } from '../services/auth-service';
 import { LoggerService } from '../services/logger-service';
 
 import { SocialAuthService } from '../services/social-auth/social-auth-service';
-import { GoogleLoginProvider } from '../services/social-auth/google-login-provider'; 
+import { GoogleLoginProvider } from '../services/social-auth/google-login-provider';
 import { LocalNoteService } from '../services/local-note-service';
 
 import { Folder } from './../model/folder';
@@ -20,8 +20,9 @@ export class LoginComponent implements OnInit {
     signInModel: any = {};
     registerModel: any = {};
     isLoading = false;
-    errorMessage = "";
-    imgPath='assets/logo.png';
+    signInErrorMessage = "";
+    registerErrorMessage = "";
+    imgPath = 'assets/logo.png';
 
     constructor(
         private iconRegistry: MatIconRegistry,
@@ -32,9 +33,9 @@ export class LoginComponent implements OnInit {
         private noteService: LocalNoteService,
         private socialAuthService: SocialAuthService,
         private loggerService: LoggerService) {
-        
+
         const googleIconUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/google.svg');
-        iconRegistry.addSvgIcon('google-colored', googleIconUrl);            
+        iconRegistry.addSvgIcon('google-colored', googleIconUrl);
     }
 
     ngOnInit() {
@@ -47,16 +48,16 @@ export class LoginComponent implements OnInit {
 
     async onSocialLoginDone(user: any) {
         try {
-             const result = await this.authService.loginSocial({email: user.email, provider : user.provider, token: user.idToken})
-             await this.saveFolder(result)
-             this.router.navigate(['home']);
+            const result = await this.authService.loginSocial({ email: user.email, provider: user.provider, token: user.idToken })
+            await this.saveFolder(result)
+            this.router.navigate(['home']);
         } catch (err) {
             if (err.status === 401) {
-                this.errorMessage = "Wrong token provided";
+                this.signInErrorMessage = "Wrong token provided";
             }
 
             if (err.status === 0) {
-                this.errorMessage = "Cannot connect to server. Please check your connection.";
+                this.signInErrorMessage = "Cannot connect to server. Please check your connection.";
             }
             this.isLoading = false;
         }
@@ -66,7 +67,7 @@ export class LoginComponent implements OnInit {
 
     signInWithGoogle(): void {
         this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).catch(err => {
-            console.log('SignIn error')
+            this.signInErrorMessage = err.toString()
         })
     }
 
@@ -85,7 +86,7 @@ export class LoginComponent implements OnInit {
 
     async login() {
         this.isLoading = true;
-        this.errorMessage = "";
+        this.signInErrorMessage = "";
 
         try {
             const result = await this.authService.login({ email: this.signInModel.username, password: this.signInModel.password })
@@ -93,11 +94,11 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['home']);
         } catch (err) {
             if (err.status == 401) {
-                this.errorMessage = "Incorrect login or password";
+                this.signInErrorMessage = "Incorrect login or password";
             }
 
             if (err.status == 0) {
-                this.errorMessage = "Cannot connect to server. Please check your connection.";
+                this.signInErrorMessage = "Cannot connect to server. Please check your connection.";
             }
             this.isLoading = false;
         };
@@ -106,12 +107,14 @@ export class LoginComponent implements OnInit {
 
     async register() {
         this.isLoading = true;
-        try {
-            const result = await this.authService.signup({email : this.registerModel.username, password: this.registerModel.password})
+        this.registerErrorMessage = "";
 
-            if (result.error != null)  {
+        try {
+            const result = await this.authService.signup({ email: this.registerModel.username, password: this.registerModel.password })
+
+            if (result.error != null) {
                 if (result.error == "USER_EXISTS") {
-                    this.errorMessage = "User already exists.";
+                    this.registerErrorMessage = "User already exists.";
                 }
                 this.isLoading = false;
             } else {
@@ -130,13 +133,13 @@ export class LoginComponent implements OnInit {
                 this.router.navigate(['home']);
             }
 
-        } catch(err) {
+        } catch (err) {
             if (err.status === 401) {
-                this.errorMessage = "Incorrect login or password.";
+                this.registerErrorMessage = "Incorrect login or password.";
             }
 
             if (err.status === 0) {
-                this.errorMessage = "Cannot connect to server. Please check your connection.";
+                this.registerErrorMessage = "Cannot connect to server. Please check your connection.";
             }
 
             this.isLoading = false;

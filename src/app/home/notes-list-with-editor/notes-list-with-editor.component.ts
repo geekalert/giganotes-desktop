@@ -25,7 +25,7 @@ export class NotesListWithEditorComponent implements OnInit {
   public searchFilter: string;
   notes = Array<Note>();
   selectedNote = new Note();
-  currentFolder : Folder;
+  currentFolder: Folder;
   noteEditor: any;
   editorSetup: any;
 
@@ -35,8 +35,8 @@ export class NotesListWithEditorComponent implements OnInit {
 
   ngOnInit() {
 
-    this.route.params.subscribe(params => {      
-      switch(params.mode) {
+    this.route.params.subscribe(params => {
+      switch (params.mode) {
         case 'all':
           this.mode = 'all'
           break
@@ -50,7 +50,7 @@ export class NotesListWithEditorComponent implements OnInit {
         default:
           this.mode = 'all'
       }
-      this.loadData();          
+      this.loadData();
     })
 
     const parent = this;
@@ -65,20 +65,20 @@ export class NotesListWithEditorComponent implements OnInit {
         success(list)
       },
       codesample_languages: [
-        {text: 'HTML/XML', value: 'markup'},
-        {text: 'JavaScript', value: 'javascript'},
-        {text: 'bash',value: 'bash'},  
-        {text: 'JSON',value: 'json'},
-        {text:"go",value:"go"},         
-        {text: 'CSS', value: 'css'},
-        {text: 'PHP', value: 'php'},
-        {text: 'Ruby', value: 'ruby'},
-        {text: 'Python', value: 'python'},
-        {text: 'Java', value: 'java'},
-        {text: 'C', value: 'c'},
-        {text: 'C#', value: 'csharp'},
-        {text: 'C++', value: 'cpp'}
-      ],      
+        { text: 'HTML/XML', value: 'markup' },
+        { text: 'JavaScript', value: 'javascript' },
+        { text: 'bash', value: 'bash' },
+        { text: 'JSON', value: 'json' },
+        { text: "go", value: "go" },
+        { text: 'CSS', value: 'css' },
+        { text: 'PHP', value: 'php' },
+        { text: 'Ruby', value: 'ruby' },
+        { text: 'Python', value: 'python' },
+        { text: 'Java', value: 'java' },
+        { text: 'C', value: 'c' },
+        { text: 'C#', value: 'csharp' },
+        { text: 'C++', value: 'cpp' }
+      ],
       paste_data_images: true, setup: editor => {
         this.noteEditor = editor;
       }
@@ -106,9 +106,9 @@ export class NotesListWithEditorComponent implements OnInit {
       case 'all':
         this.loadAllNotes()
         break;
-      case 'fav':      
-        this.loadFavorites();          
-        break;        
+      case 'fav':
+        this.loadFavorites();
+        break;
       case 'folder':
         this.loadNotes(this.folderId)
         break;
@@ -117,20 +117,20 @@ export class NotesListWithEditorComponent implements OnInit {
 
   async readFolderToLinkSelectionMenu(folder: Folder, items: LinkTreeItem[]) {
     if (folder.notes != null) {
-        for (const note of folder.notes) {
-          const link = new LinkTreeItem(note.title)
-          link.value = this.INTERNAL_LINK_PREFIX + note.id;
-          items.push(link);
-        }
+      for (const note of folder.notes) {
+        const link = new LinkTreeItem(note.title)
+        link.value = this.INTERNAL_LINK_PREFIX + note.id;
+        items.push(link);
+      }
     }
 
     if (folder.children != null) {
-        for (const childFolder of folder.children) {
-          const link = new LinkTreeItem(childFolder.title);
-          link.menu = new Array<LinkTreeItem>();
-          await this.readFolderToLinkSelectionMenu(childFolder, link.menu);
-          items.push(link);
-        }
+      for (const childFolder of folder.children) {
+        const link = new LinkTreeItem(childFolder.title);
+        link.menu = new Array<LinkTreeItem>();
+        await this.readFolderToLinkSelectionMenu(childFolder, link.menu);
+        items.push(link);
+      }
     }
 
   }
@@ -140,64 +140,66 @@ export class NotesListWithEditorComponent implements OnInit {
     const rootFolder = await this.buildTreeFromNodesList();
     await this.readFolderToLinkSelectionMenu(rootFolder, items)
     return items
-  }  
+  }
 
-  async buildTreeFromNodesList() : Promise<Folder> {
+  async buildTreeFromNodesList(): Promise<Folder> {
     const folders = await this.localNoteService.getAllFolders(false)
     const notes = await this.localNoteService.getAllNotes(false)
 
     folders.sort((a, b) => a.level - b.level)
     notes.sort((a, b) => a.level - b.level)
-  
+
     const root = folders[0]
     const foldersMap = new Map<string, Folder>();
     foldersMap.set(root.id, root)
 
-    for(let i = 1; i < folders.length; i++) {
+    for (let i = 1; i < folders.length; i++) {
       const folder = folders[i];
       const parentFolder = foldersMap.get(folder.parentId)
-      
+
       if (parentFolder.children == null) {
-          parentFolder.children = Array<Folder>();
+        parentFolder.children = Array<Folder>();
       }
       parentFolder.children.push(folder)
       foldersMap.set(folder.id, folder)
     }
 
-    for(const note of notes) {
+    for (const note of notes) {
       const parentFolder = foldersMap.get(note.folderId)
 
       if (parentFolder.notes == null) {
         parentFolder.notes = Array<Note>();
-      }                 
-      parentFolder.notes.push(note)      
+      }
+      parentFolder.notes.push(note)
     }
-  
+
     return Promise.resolve(root)
   }
 
   async loadAllNotes() {
     this.notes = await this.localNoteService.getAllNotes(false)
-    this.currentFolder = await this.localNoteService.getRootFolder()    
+    this.currentFolder = await this.localNoteService.getRootFolder()
     this.selectFirstNote()
   }
 
   async loadFavorites() {
-      this.notes = await this.localNoteService.getFavoriteNotes()
-      this.selectFirstNote()
+    this.notes = await this.localNoteService.getFavoriteNotes()
+    this.selectFirstNote()
   }
-  
+
   async loadNotes(folderId: string) {
-    this.noteEditor.setContent('')
+    if (this.noteEditor != null) {
+      this.noteEditor.setContent('')
+    }
     this.selectedNote.title = ''
 
     this.notes = await this.localNoteService.loadNotesByFolder(folderId)
     this.currentFolder = await this.localNoteService.loadFolderById(folderId)
-    this.selectFirstNote()  
+    this.selectFirstNote()
   }
 
   selectFirstNote() {
-    if (this.notes.length > 0) {      
+    if (this.notes.length > 0) {
       this.openNote(this.notes[0])
       this.selectedNote = this.notes[0];
     }
@@ -215,12 +217,12 @@ export class NotesListWithEditorComponent implements OnInit {
 
 
   async onNewNote() {
-    this.selectedNote = await this.createNote()    
+    this.selectedNote = await this.createNote()
     this.openNote(this.selectedNote)
     this.notes.push(this.selectedNote)
   }
-  
-  async createNote() : Promise<Note> {
+
+  async createNote(): Promise<Note> {
     let note = new Note()
     note.title = ''
     note.text = ''
@@ -230,20 +232,20 @@ export class NotesListWithEditorComponent implements OnInit {
     note.userId = this.authService.userId
     let now = new Date()
     note.createdAt = now
-    note.updatedAt = now    
+    note.updatedAt = now
     await this.localNoteService.uploadNote(note)
     return Promise.resolve(note)
   }
 
-  onSaveNote() {   
+  onSaveNote() {
     if (this.selectedNote == null) {
       return
     }
-      
+
     this.selectedNote.text = this.noteEditor.getContent();
-    
+
     this.selectedNote.updatedAt = new Date();
-    this.localNoteService.updateNote(this.selectedNote);         
+    this.localNoteService.updateNote(this.selectedNote);
   }
 
   async onDoSync() {
@@ -263,9 +265,9 @@ export class NotesListWithEditorComponent implements OnInit {
 
   async searchNotes() {
     if (this.mode == 'all') {
-      this.notes = await this.localNoteService.searchNotes(this.searchFilter, null)      
+      this.notes = await this.localNoteService.searchNotes(this.searchFilter, null)
     } else if (this.mode == 'folder') {
-      this.notes = await this.localNoteService.searchNotes(this.searchFilter, this.currentFolder.id)      
+      this.notes = await this.localNoteService.searchNotes(this.searchFilter, this.currentFolder.id)
     }
   }
 
@@ -274,12 +276,12 @@ export class NotesListWithEditorComponent implements OnInit {
     if (element.tagName === 'A') {
       const hrefValue = element.attributes['href'].value;
       if (hrefValue.indexOf(this.INTERNAL_LINK_PREFIX) !== -1) {
-        const id = hrefValue.substring(6);     
+        const id = hrefValue.substring(6);
         const event = new NavigateEvent('1')
-        this.eventBusService.sendMessage(event)   
+        this.eventBusService.sendMessage(event)
       }
     }
-  }  
+  }
 
   async onAddToFavorites() {
     this.localNoteService.addToFavorites(this.selectedNote.id)
