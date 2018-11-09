@@ -45,7 +45,7 @@
         </button> 
 
       </div>
-      <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%" (onClick)="handleEditorClick($event)"></editor>
+      <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%" [(ngModel)]="selectedNote.text" (onClick)="handleEditorClick($event)"></editor>
     </div>
   </div>
 </div>

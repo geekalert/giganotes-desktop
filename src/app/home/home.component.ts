@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { TreeItem, TreeFolderItem } from '../model/ui/tree-item';
 import { AuthService } from '../services/auth-service';
@@ -7,6 +7,7 @@ import { LocalNoteService } from '../services/local-note-service';
 import { RemoteNoteService } from '../services/remote-note-service';
 import { SyncService } from '../services/sync-service';
 import { EventBusService } from '../services/event-bus-service';
+import { NavigationTreeComponent } from './navigation-tree/navigation-tree.component';
 
 @Component({
   selector: 'app-home',
@@ -18,8 +19,13 @@ export class HomeComponent implements OnInit {
   isDarkTheme = true;
   bannerPath = 'assets/icon58x64.png';
   items = Array<TreeItem>();
+  rootItem = new TreeFolderItem();
+  treeItemsMap = new Map<string, TreeItem>();
 
-  constructor(private route: ActivatedRoute,
+  @ViewChild(NavigationTreeComponent) navigationTree: NavigationTreeComponent;
+
+  constructor(private zone:NgZone,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private syncService: SyncService,
     private socialAuthService: SocialAuthService,
@@ -34,9 +40,30 @@ export class HomeComponent implements OnInit {
     this.init();
 
     this.eventBusService.getMessages().subscribe(e => {
-      console.log(e);
+      this.onHandleNoteNavigation(e.noteId)
     })
   }
+
+  async onHandleNoteNavigation(noteId : string) {
+    const note = await this.localNoteService.loadNoteById(noteId)
+    await this.navigationTree.clearAnySelection(this.rootItem)
+    const folderItem = this.treeItemsMap.get(note.folderId)
+    this.makeSelectedWithExpandingParents(folderItem)
+    this.zone.run(() => {
+      this.router.navigate(['list', { mode: 'folder', folderId: note.folderId, noteId: noteId }], { relativeTo: this.route })
+    })    
+  }
+
+  makeSelectedWithExpandingParents(curItem: TreeItem) {    
+    let item = curItem;
+    item.isSelected = true
+    while (item.parent != null) {
+      item = item.parent
+      if (!item.expanded) {
+        item.expanded = true
+      }
+    }    
+  }  
 
   async init() {
     await this.loadItems();
@@ -73,13 +100,12 @@ export class HomeComponent implements OnInit {
   async loadChildrenToFolder(root: TreeFolderItem) {
     const foldersList = await this.localNoteService.getAllFolders(false)
     const sortedFoldersList = foldersList.sort((a, b) => a.level - b.level);
-
-    const treeItemsMap = new Map<string, TreeItem>();
-    treeItemsMap.set(sortedFoldersList[0].id, root)
+    
+    this.treeItemsMap.set(sortedFoldersList[0].id, root)
 
     for (let i = 1; i < sortedFoldersList.length; i++) {
       const curFolder = sortedFoldersList[i]
-      const parentItem = curFolder.parentId == null ? root : treeItemsMap.get(curFolder.parentId)
+      const parentItem = curFolder.parentId == null ? root : this.treeItemsMap.get(curFolder.parentId)
 
       const curTreeItem = new TreeFolderItem();
 
@@ -94,16 +120,15 @@ export class HomeComponent implements OnInit {
       curTreeItem.parent = parentItem;
 
       parentItem.subItems.push(curTreeItem)
-      treeItemsMap.set(curFolder.id, curTreeItem)
+      this.treeItemsMap.set(curFolder.id, curTreeItem)
     }
-
+    
     return Promise.resolve(root)
   }
 
   async loadItems() {
 
     // Pseudo root item
-    const rootItem = new TreeItem();
 
     const allNotesMenuItem = new TreeItem();
 
@@ -112,7 +137,7 @@ export class HomeComponent implements OnInit {
     };
     allNotesMenuItem.name = "All notes";
     allNotesMenuItem.iconName = 'list'
-    allNotesMenuItem.parent = rootItem;
+    allNotesMenuItem.parent = this.rootItem;
     allNotesMenuItem.isSelected = true; //Select 'All notes' item by default (while last folder persistense is not implemented)
 
     this.items.push(allNotesMenuItem)
@@ -123,7 +148,7 @@ export class HomeComponent implements OnInit {
     };
     favoritesMenuItem.name = "Favorites";
     favoritesMenuItem.iconName = 'favorite'
-    favoritesMenuItem.parent = rootItem;
+    favoritesMenuItem.parent = this.rootItem;
 
     this.items.push(favoritesMenuItem)
 
@@ -138,12 +163,12 @@ export class HomeComponent implements OnInit {
     }
     myNotesMenuItem.name = "Root folder";
     myNotesMenuItem.iconName = 'folder'
-    myNotesMenuItem.parent = rootItem;
+    myNotesMenuItem.parent = this.rootItem;
     myNotesMenuItem.expanded = true
 
     this.items.push(myNotesMenuItem)
 
-    rootItem.subItems.push(...this.items)
+    this.rootItem.subItems.push(...this.items)
     await this.loadChildrenToFolder(myNotesMenuItem)
   }
 

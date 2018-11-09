@@ -33,6 +33,7 @@ export class NotesListWithEditorComponent implements OnInit {
   //Parameters
   mode: string;
   folderId: string;
+  noteId: string;
 
   private localEvents = new Subject<any>();
 
@@ -49,6 +50,7 @@ export class NotesListWithEditorComponent implements OnInit {
         case 'folder':
           this.mode = 'folder'
           this.folderId = params.folderId
+          this.noteId = params.noteId
           break
         default:
           this.mode = 'all'
@@ -192,46 +194,37 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   async loadNotes(folderId: string) {
-    if (this.noteEditor != null) {
-      this.noteEditor.setContent('')
-    }
+    this.selectedNote.text = ''
     this.selectedNote.title = ''
 
     this.notes = await this.localNoteService.loadNotesByFolder(folderId)
     this.currentFolder = await this.localNoteService.loadFolderById(folderId)
-    this.selectFirstNote()
+    
+    if (this.noteId != null) {
+      const filteredBySelectedId = this.notes.filter(n => n.id == this.noteId)
+      if (filteredBySelectedId.length == 1) {
+        const noteToSelect = filteredBySelectedId[0]        
+        this.selectedNote = noteToSelect        
+      }
+    } else {
+      this.selectFirstNote() 
+    }
   }
 
   selectFirstNote() {
-    if (this.notes.length > 0) {
-      this.openNote(this.notes[0])
-      this.selectedNote = this.notes[0];
+    if (this.notes.length > 0) {      
+      this.selectedNote = this.notes[0];      
     }
   }
 
-  openNote(note: Note) {
-    if (this.noteEditor != null) {
-      this.noteEditor.setContent(note.text);
-      this.noteEditor.focus();
-    } else {
-      this.localEvents.asObservable().subscribe(event => {
-        if (event.type == 'editorReady') {
-          this.noteEditor.setContent(note.text);
-          this.noteEditor.focus();
-        }
-      })
-    }
-  }
 
   onNoteClick(note: Note) {
-    this.selectedNote = note
-    this.openNote(note)
+    this.selectedNote = note    
   }
 
 
   async onNewNote() {
-    this.selectedNote = await this.createNote()
-    this.openNote(this.selectedNote)
+    this.selectedNote = await this.createNote()    
     this.notes.push(this.selectedNote)
   }
 
@@ -290,7 +283,7 @@ export class NotesListWithEditorComponent implements OnInit {
       const hrefValue = element.attributes['href'].value;
       if (hrefValue.indexOf(this.INTERNAL_LINK_PREFIX) !== -1) {
         const id = hrefValue.substring(6);
-        const event = new NavigateEvent('1')
+        const event = new NavigateEvent(id)
         this.eventBusService.sendMessage(event)
       }
     }
