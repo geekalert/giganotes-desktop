@@ -29,6 +29,9 @@ export class SyncService {
 
     async doSync() {
         try {
+            if (this._isSyncing) {
+                return;
+            }
             this.lastSyncDate = new Date();
             this._isSyncing = true;
             const syncData = await this.remoteNoteService.getLatestSyncData(true);

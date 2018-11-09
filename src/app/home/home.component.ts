@@ -41,8 +41,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.init();
-
     this.eventBusService.getMessages().subscribe(e => {
       if (e instanceof NavigateEvent) {
         this.onHandleNoteNavigation(e.noteId)
@@ -55,7 +53,7 @@ export class HomeComponent implements OnInit {
       }
     })
 
-    this.doSync()
+    this.init();
   }
 
   async doSync() {
