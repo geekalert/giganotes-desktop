@@ -12,6 +12,7 @@ import { SyncService } from '../../services/sync-service';
 import { EventBusService } from '../../services/event-bus-service';
 import { NavigateEvent } from '../../model/events/navigate-event';
 import { Observable, Subject } from 'rxjs'
+import { SyncFinishedEvent } from '../../model/events/sync-finished';
 
 @Component({
   selector: 'app-notes-list-with-editor',
@@ -38,6 +39,12 @@ export class NotesListWithEditorComponent implements OnInit {
   private localEvents = new Subject<any>();
 
   ngOnInit() {
+
+    this.eventBusService.getMessages().subscribe(e => {
+      if (e instanceof SyncFinishedEvent) {
+        this.loadData()        
+      }
+    })
 
     this.route.params.subscribe(params => {
       switch (params.mode) {
@@ -88,9 +95,7 @@ export class NotesListWithEditorComponent implements OnInit {
         this.noteEditor = editor;
         this.localEvents.next({type: 'editorReady'})
       }
-    };
-
-    this.onDoSync();
+    };    
   }
 
   constructor(iconRegistry: MatIconRegistry,

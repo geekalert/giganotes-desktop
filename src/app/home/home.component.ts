@@ -8,6 +8,8 @@ import { RemoteNoteService } from '../services/remote-note-service';
 import { SyncService } from '../services/sync-service';
 import { EventBusService } from '../services/event-bus-service';
 import { NavigationTreeComponent } from './navigation-tree/navigation-tree.component';
+import { NavigateEvent } from '../model/events/navigate-event';
+import { SyncFinishedEvent } from '../model/events/sync-finished';
 
 @Component({
   selector: 'app-home',
@@ -40,8 +42,15 @@ export class HomeComponent implements OnInit {
     this.init();
 
     this.eventBusService.getMessages().subscribe(e => {
-      this.onHandleNoteNavigation(e.noteId)
+      if (e instanceof NavigateEvent) {
+        this.onHandleNoteNavigation(e.noteId)
+      }
     })
+  }
+
+  async doSync() {
+    await this.syncService.doSync();
+    this.eventBusService.sendMessage(new SyncFinishedEvent())  
   }
 
   async onHandleNoteNavigation(noteId : string) {
