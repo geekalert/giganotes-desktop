@@ -111,8 +111,11 @@ export class NavigationTreeComponent implements OnInit {
     treeItem.name = folderName    
   }
 
-  onDeleteFolder(item: TreeItem) {
-
+  onDeleteFolder(item: TreeFolderItem) {
+    this.noteService.removeFolder(item.folderId)
+    const ix = item.parent.subItems.indexOf(item)
+    item.parent.subItems.splice(ix, 1)
+    item.parent.isSelected = true
   }
 
 }

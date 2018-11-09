@@ -21,7 +21,9 @@ export class HomeComponent implements OnInit {
   isDarkTheme = true;
   bannerPath = 'assets/icon58x64.png';
   items = Array<TreeItem>();
+  allNotesMenuItem = new TreeItem();
   rootItem = new TreeFolderItem();
+  myNotesMenuItem: TreeFolderItem;
   treeItemsMap = new Map<string, TreeItem>();
 
   @ViewChild(NavigationTreeComponent) navigationTree: NavigationTreeComponent;
@@ -45,7 +47,15 @@ export class HomeComponent implements OnInit {
       if (e instanceof NavigateEvent) {
         this.onHandleNoteNavigation(e.noteId)
       }
+
+      if (e instanceof SyncFinishedEvent) {
+        this.myNotesMenuItem.subItems = []
+        this.loadChildrenToFolder(this.myNotesMenuItem)
+        this.navigationTree.onSelectedItemClick(this.allNotesMenuItem)
+      }
     })
+
+    this.doSync()
   }
 
   async doSync() {
@@ -137,19 +147,17 @@ export class HomeComponent implements OnInit {
 
   async loadItems() {
 
-    // Pseudo root item
+    // Pseudo root item    
 
-    const allNotesMenuItem = new TreeItem();
-
-    allNotesMenuItem.onClick = (item: any) => {
+    this.allNotesMenuItem.onClick = (item: any) => {
       this.onAllNotesClick(this, item)
     };
-    allNotesMenuItem.name = "All notes";
-    allNotesMenuItem.iconName = 'list'
-    allNotesMenuItem.parent = this.rootItem;
-    allNotesMenuItem.isSelected = true; //Select 'All notes' item by default (while last folder persistense is not implemented)
+    this.allNotesMenuItem.name = "All notes";
+    this.allNotesMenuItem.iconName = 'list'
+    this.allNotesMenuItem.parent = this.rootItem;
+    this.allNotesMenuItem.isSelected = true; //Select 'All notes' item by default (while last folder persistense is not implemented)
 
-    this.items.push(allNotesMenuItem)
+    this.items.push(this.allNotesMenuItem)
 
     const favoritesMenuItem = new TreeItem();
     favoritesMenuItem.onClick = (item: any) => {
@@ -163,22 +171,22 @@ export class HomeComponent implements OnInit {
 
     const rootFolder = await this.localNoteService.getRootFolder();
 
-    const myNotesMenuItem = new TreeFolderItem();
-    myNotesMenuItem.folderId = rootFolder.id;
-    myNotesMenuItem.showMenuButton = true;
-    myNotesMenuItem.hasAddButton = true;
-    myNotesMenuItem.onClick = (item: any) => {
+    this.myNotesMenuItem = new TreeFolderItem();
+    this.myNotesMenuItem.folderId = rootFolder.id;
+    this.myNotesMenuItem.showMenuButton = true;
+    this.myNotesMenuItem.hasAddButton = true;
+    this.myNotesMenuItem.onClick = (item: any) => {
       this.onFolderClick(this, item);
     }
-    myNotesMenuItem.name = "Root folder";
-    myNotesMenuItem.iconName = 'folder'
-    myNotesMenuItem.parent = this.rootItem;
-    myNotesMenuItem.expanded = true
+    this.myNotesMenuItem.name = "Root folder";
+    this.myNotesMenuItem.iconName = 'folder'
+    this.myNotesMenuItem.parent = this.rootItem;
+    this.myNotesMenuItem.expanded = true
 
-    this.items.push(myNotesMenuItem)
+    this.items.push(this.myNotesMenuItem)
 
     this.rootItem.subItems.push(...this.items)
-    await this.loadChildrenToFolder(myNotesMenuItem)
+    await this.loadChildrenToFolder(this.myNotesMenuItem)
   }
 
 }

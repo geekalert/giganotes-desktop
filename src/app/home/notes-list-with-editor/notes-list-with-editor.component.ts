@@ -262,8 +262,7 @@ export class NotesListWithEditorComponent implements OnInit {
   async onDoSync() {
     // Make sync
     await this.syncService.doSync();
-
-    await this.loadData();
+    this.eventBusService.sendMessage(new SyncFinishedEvent())  
   }
 
   isSyncing() {
