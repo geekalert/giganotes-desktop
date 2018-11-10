@@ -26,7 +26,7 @@ export class AuthService {
               .set('ClientType', AppConfig.clientType);
   }
 
-  async hasValidToken(): Promise<boolean> {    
+  async hasValidToken(): Promise<boolean> {
     this.isOffline = await this.storage.get('offline') === '1'
     if (this.isOffline) {
         return true
@@ -34,7 +34,7 @@ export class AuthService {
     const jwt = await this.storage.get('jwt')
     return ((jwt != null) && !this.jwtHelper.isTokenExpired(jwt))
   }
-  
+
   async login(values: any): Promise<AuthResponse> {
     const authResponse = await this.http.post<AuthResponse>(AppConfig.scheme + AppConfig.apiUrl + `/login`, values,
                           {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   async loginSocial(values: any): Promise<AuthResponse> {
-    const authResponse = await this.http.post<AuthResponse>(AppConfig.scheme + AppConfig.apiUrl + `login-social`, values,
+    const authResponse = await this.http.post<AuthResponse>(AppConfig.scheme + AppConfig.apiUrl + `/login-social`, values,
                      {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
     await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'social')
     return authResponse
@@ -63,10 +63,10 @@ export class AuthService {
                 {responseType : 'json', observe: 'body', headers: this.headers}).toPromise<AuthResponse>()
     if (authResponse.token != null) {
        await this.storeTokenAndUsername(authResponse.token, authResponse.userId, values.email, 'internal');
-    } 
+    }
     return authResponse
   }
-  
+
   async storeTokenAndUsername(jwt: string, userId: number, email: string, loginType: string): Promise<any> {
     await this.storage.set('jwt', jwt)
     await this.storage.set('userId', userId)
@@ -93,7 +93,7 @@ export class AuthService {
   async loginOffline() {
     await this.storage.set('offline', 1)
     await this.storeTokenAndUsername("", 4294967295, "offline-user@giganotes.com", 'offline')
-  }  
+  }
 }
 
 
