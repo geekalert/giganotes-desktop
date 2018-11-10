@@ -22,7 +22,7 @@
   "win": {
     "icon": "dist",
     "target": [
-      "portable"
+      "nsis"
     ]
   },
   "mac": {
@@ -34,7 +34,7 @@
   "linux": {
     "icon": "dist",
     "target": [
-      "AppImage"
+      "AppImage", "deb", "rpm"
     ]
   }
 }
