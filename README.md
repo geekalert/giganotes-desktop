@@ -1,6 +1,6 @@
 # GigaNotes
 
-GigaNotes is an open source data management and note taking app.
+[GigaNotes](https://giganotes.com) is an open source data management and note taking app.
 
 ![Giganotes](/docs/giganotes.png)
 
