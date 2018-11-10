@@ -11,12 +11,18 @@ function createWindow() {
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
+  const DEFAULT_WIDTH = 1280;
+  const DEFAULT_HEIGHT = 800;
+
+  const w = (size.width > DEFAULT_WIDTH) ? DEFAULT_WIDTH : size.width;
+  const h = (size.height > DEFAULT_HEIGHT) ? DEFAULT_HEIGHT : size.height;
+
   // Create the browser window.
   win = new BrowserWindow({
     x: 0,
     y: 0,
-    width: size.width,
-    height: size.height
+    width: w,
+    height: h,
   });
 
   if (serve) {
