@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { MatIconRegistry } from '@angular/material';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatIconRegistry, MatInput } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from "@angular/router";
 import { LocalNoteService } from '../../services/local-note-service';
@@ -35,6 +35,8 @@ export class NotesListWithEditorComponent implements OnInit {
   mode: string;
   folderId: string;
   noteId: string;
+
+  @ViewChild('noteTitleInput') noteTitleInput: MatInput;
 
   private localEvents = new Subject<any>();
 
@@ -102,7 +104,7 @@ export class NotesListWithEditorComponent implements OnInit {
     sanitizer: DomSanitizer,
     private route: ActivatedRoute,
     private localNoteService: LocalNoteService,
-    private authService: AuthService,
+    public authService: AuthService,
     private syncService: SyncService,
     private eventBusService: EventBusService
   ) {
@@ -230,7 +232,8 @@ export class NotesListWithEditorComponent implements OnInit {
 
   async onNewNote() {
     this.selectedNote = await this.createNote()    
-    this.notes.push(this.selectedNote)
+    this.notes.splice(0, 0, this.selectedNote)    
+    this.noteTitleInput.focus()
   }
 
   async createNote(): Promise<Note> {

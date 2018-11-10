@@ -2,7 +2,7 @@
 
 <mat-dialog-content>
   <mat-form-field>
-    <input matInput placeholder="Folder name" [(ngModel)]="folderName">
+    <input matInput placeholder="Folder name" [(ngModel)]="folderName" (keyup.enter)="closeWithResult()">
   </mat-form-field>
 </mat-dialog-content>
 

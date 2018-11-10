@@ -20,4 +20,8 @@ export class AddFolderDialogComponent implements OnInit {
   close(): void {
     this.dialogRef.close();
   }
+
+  closeWithResult() {
+    this.dialogRef.close(this.folderName)
+  }
 }

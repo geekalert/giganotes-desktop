@@ -35,10 +35,10 @@
     </div>
   </div>
 
-  <div fxFlex="65">
+  <div fxFlex="65"  style="margin-left: 1px"> 
     <div fxLayout="column" style="height:100%; width:100%">
       <div fxLayout="row">
-        <input matInput placeholder="Note title" [(ngModel)]="selectedNote.title">      
+        <input #noteTitleInput="matInput" matInput placeholder="Enter note title" [(ngModel)]="selectedNote.title">      
 
         <button mat-button (click)="onSaveNote()">
           <mat-icon>save</mat-icon>Save
