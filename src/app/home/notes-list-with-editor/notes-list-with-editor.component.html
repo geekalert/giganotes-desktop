@@ -5,7 +5,7 @@
   <button mat-button (click)="onAddToFavorites()">
     <mat-icon>favorite</mat-icon>Add to favorites
   </button>
-  <button mat-button (click)="onDoSync()">
+  <button mat-button (click)="onDoSync()" *ngIf="!authService.isOffline">
     <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>Syncronize
   </button>  
 </div>

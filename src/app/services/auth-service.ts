@@ -76,16 +76,11 @@ export class AuthService {
   }
 
   async readTokenAndUserameFromStorage() : Promise<any> {
-    if (this.isOffline) {
-      this.keepTokenAndUsername("", 4294967295, "offline-user@giganotes.com", 'offline')
-      return
-    } else {
-      const jwt = await this.storage.get('jwt')
-      const userId = parseInt(await this.storage.get('userId'))
-      const email = await this.storage.get('email')
-      const loginType = await this.storage.get('loginType')
-      this.keepTokenAndUsername(jwt, userId, email, loginType)
-    }
+    const jwt = await this.storage.get('jwt')
+    const userId = parseInt(await this.storage.get('userId'))
+    const email = await this.storage.get('email')
+    const loginType = await this.storage.get('loginType')
+    this.keepTokenAndUsername(jwt, userId, email, loginType)
   }
 
   keepTokenAndUsername(jwt: string, userId: number, email: string, loginType: string) {
@@ -97,6 +92,7 @@ export class AuthService {
 
   async loginOffline() {
     await this.storage.set('offline', 1)
+    await this.storeTokenAndUsername("", 4294967295, "offline-user@giganotes.com", 'offline')
   }  
 }
 

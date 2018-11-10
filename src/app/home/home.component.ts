@@ -57,6 +57,9 @@ export class HomeComponent implements OnInit {
   }
 
   async doSync() {
+    if (this.authService.isOffline) {
+      return;
+    }
     await this.syncService.doSync();
     this.eventBusService.sendMessage(new SyncFinishedEvent())  
   }
@@ -84,7 +87,7 @@ export class HomeComponent implements OnInit {
 
   async init() {
     await this.loadItems();
-    await this.syncService.doSync();
+    await this.doSync();
   }
 
   async logout() {

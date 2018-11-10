@@ -123,7 +123,7 @@ export class LocalNoteService {
             let now = new Date()
             folder.createdAt = now
             folder.updatedAt = now
-            await this.dbService.run('INSERT INTO folder (' + this.allFieldsFolder + ') VALUES (?, ?, ?, ?, ?, ?, ?);', [folder.id, folder.title, folder.parentId, folder.level, this.authService.userId, folder.createdAt.getTime(), folder.updatedAt.getTime()]);
+            await this.dbService.run('INSERT INTO folder (' + this.allFieldsFolder + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?);', [folder.id, folder.title, folder.parentId, folder.level, this.authService.userId, folder.createdAt.getTime(), folder.updatedAt.getTime(), null]);
         }
     }
 

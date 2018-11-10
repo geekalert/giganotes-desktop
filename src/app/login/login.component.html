@@ -37,7 +37,7 @@
 
                 <div fxLayout="row" style="margin-top: 20px">
                   <a [routerLink]="['/restore-password']">Forgot your password?</a>
-                  <a href="#" style="margin-left: auto;">Work offline</a>
+                  <a href="#" style="margin-left: auto;" (click)="doOffline()">Work offline</a>
                 </div>
               </form>
             </div>
