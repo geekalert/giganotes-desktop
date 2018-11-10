@@ -80,6 +80,7 @@ import {
 } from '@angular/material';
 import { EventBusService } from './services/event-bus-service';
 import { DataService } from './services/data-service';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
 @NgModule({
   declarations: [
@@ -91,7 +92,8 @@ import { DataService } from './services/data-service';
     RenameFolderDialogComponent,
     SettingsComponent,
     LoginComponent,
-    HomeComponent
+    HomeComponent,
+    ForgotPasswordComponent
   ],
   entryComponents:
     [
