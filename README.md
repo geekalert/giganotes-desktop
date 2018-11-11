@@ -54,3 +54,10 @@ npm start
 ## Contributions
 
 We'd love to accept your patches and contributions to this project. Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
+
+### Code reviews
+
+All submissions, including submissions by project members, require review. We
+use GitHub pull requests for this purpose. Please read
+[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
+information on using pull requests.
