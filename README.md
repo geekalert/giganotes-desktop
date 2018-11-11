@@ -51,3 +51,6 @@ To run Giganotes in development mode please use the command
 ```bash
 npm start
 ```
+## Contributions
+
+We'd love to accept your patches and contributions to this project. Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
