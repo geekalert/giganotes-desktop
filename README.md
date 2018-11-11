@@ -22,7 +22,7 @@
 
 Giganotes is an Electron-based application. In order to build it, [Node.js](https://nodejs.org) is required.
 
-To build GigaNotes, dependencies should be installed
+To build GigaNotes, dependencies should be installed using
 
 ```bash
 npm install
