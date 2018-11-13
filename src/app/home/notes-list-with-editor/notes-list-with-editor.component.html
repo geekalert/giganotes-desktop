@@ -13,7 +13,7 @@
 
 
 <div fxLayout="row" style="height:100%;">
-  <div fxFlex="35" resizable [sizerBarPosition]="2">
+  <div fxFlex="30" resizable [sizerBarPosition]="2">
     <div fxLayout="column" style="height:100%;">
       <mat-form-field color="primary" floatLabel="never" style="width: 100%;">
         <input #searchHelpPanelContainer matInput [(ngModel)]="searchFilter" #searchInput type="search" placeholder="Search notes..."
@@ -35,7 +35,7 @@
     </div>
   </div>
 
-  <div fxFlex="65" style="margin-left: 1px">
+  <div fxFlex="70" style="margin-left: 1px">
     <div fxLayout="column" style="height:100%; width:100%">
       <div fxLayout="row">
         <input #noteTitleInput="matInput" matInput placeholder="Enter note title" [(ngModel)]="selectedNote.title"
