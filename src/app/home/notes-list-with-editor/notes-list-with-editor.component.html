@@ -1,5 +1,5 @@
 <div>
-  <button mat-button (click)="onNewNote()">
+  <button *ngIf="mode != 'fav'" mat-button (click)="onNewNote()">
     <mat-icon>add</mat-icon>New note
   </button>
   <button *ngIf="mode != 'fav'" mat-button (click)="onAddToFavorites()">
