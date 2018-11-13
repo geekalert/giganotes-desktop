@@ -2,12 +2,12 @@
   <button mat-button (click)="onNewNote()">
     <mat-icon>add</mat-icon>New note
   </button>
-  <button mat-button (click)="onAddToFavorites()">
+  <button *ngIf="mode != 'fav'" mat-button (click)="onAddToFavorites()">
     <mat-icon>favorite</mat-icon>Add to favorites
   </button>
   <button mat-button (click)="onDoSync()" *ngIf="!authService.isOffline">
     <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>Syncronize
-  </button>  
+  </button>
 </div>
 
 
@@ -25,7 +25,7 @@
 
       <div style="overflow: auto; height:100%;">
         <mat-nav-list>
-          <mat-list-item *ngFor="let note of notes" (click)="onNoteClick(note)" [class.list-item-selected]="this.selectedNote == note">
+          <mat-list-item *ngFor="let note of notes" (click)="onNoteClick(note)" [class.list-item-selected]="this.selectedNoteInfo == note">
             <mat-icon matListIcon class="avatar">description</mat-icon>
             <span *ngIf="note.title.length > 0">{{note.title}}</span>
             <span *ngIf="note.title.length == 0">Untitled note</span>
@@ -35,17 +35,23 @@
     </div>
   </div>
 
-  <div fxFlex="65"  style="margin-left: 1px"> 
+  <div fxFlex="65" style="margin-left: 1px">
     <div fxLayout="column" style="height:100%; width:100%">
       <div fxLayout="row">
-        <input #noteTitleInput="matInput" matInput placeholder="Enter note title" [(ngModel)]="selectedNote.title">      
+        <input #noteTitleInput="matInput" matInput placeholder="Enter note title" [(ngModel)]="selectedNote.title"
+          (keyup)="onNoteTitleKeyUp($event);" (focusout)="onNoteNameInputFocusOut()">
 
         <button mat-button (click)="onSaveNote()">
           <mat-icon>save</mat-icon>Save
-        </button> 
+        </button>
+
+        <button mat-button (click)="onDeleteNote()">
+          <mat-icon>delete</mat-icon>Delete
+        </button>
 
       </div>
-      <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%" [(ngModel)]="selectedNote.text" (onClick)="handleEditorClick($event)"></editor>
+      <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%" [(ngModel)]="selectedNote.text"
+        (onClick)="handleEditorClick($event)"></editor>
     </div>
   </div>
 </div>

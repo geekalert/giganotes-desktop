@@ -53,7 +53,7 @@ export class NavigationTreeComponent implements OnInit {
     dialogRef.afterClosed().subscribe(folderName => {
       if (folderName.length > 0) {
         parent.createFolder(item, folderName)
-      }      
+      }
     });
   }
 
@@ -62,7 +62,7 @@ export class NavigationTreeComponent implements OnInit {
     const folder = new Folder();
     let now = new Date()
     folder.createdAt = now
-    folder.updatedAt = now        
+    folder.updatedAt = now
     folder.id = uuid()
     folder.title= folderName
     folder.parentId = parent.id
@@ -88,7 +88,7 @@ export class NavigationTreeComponent implements OnInit {
     parentTreeItem.subItems.push(treeItem)
 
     treeItem.onClick(treeItem)
-    
+
   }
 
   onRenameFolder(item: TreeFolderItem) {
@@ -99,7 +99,7 @@ export class NavigationTreeComponent implements OnInit {
     const parent = this;
     dialogRef.afterClosed().subscribe(folderName => {
       if (folderName.length > 0) {
-        parent.renameFolder(item, folderName)      
+        parent.renameFolder(item, folderName)
       }
     });
   }
@@ -108,7 +108,7 @@ export class NavigationTreeComponent implements OnInit {
     const folder = await this.noteService.loadFolderById(treeItem.folderId)
     folder.title = folderName
     await this.noteService.updateFolder(folder)
-    treeItem.name = folderName    
+    treeItem.name = folderName
   }
 
   onDeleteFolder(item: TreeFolderItem) {

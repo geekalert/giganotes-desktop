@@ -27,6 +27,7 @@ export class NotesListWithEditorComponent implements OnInit {
   public searchFilter: string;
   notes = Array<Note>();
   selectedNote = new Note();
+  selectedNoteInfo = new Note();
   currentFolder: Folder;
   noteEditor: any;
   editorSetup: any;
@@ -95,7 +96,7 @@ export class NotesListWithEditorComponent implements OnInit {
       ],
       paste_data_images: true, setup: editor => {
         this.noteEditor = editor;
-        this.localEvents.next({type: 'editorReady'})
+        this.localEvents.next({ type: 'editorReady' })
       }
     };
   }
@@ -160,7 +161,6 @@ export class NotesListWithEditorComponent implements OnInit {
     const notes = await this.noteService.getAllNotes(false)
 
     folders.sort((a, b) => a.level - b.level)
-    notes.sort((a, b) => a.level - b.level)
 
     const root = folders[0]
     const foldersMap = new Map<string, Folder>();
@@ -211,28 +211,32 @@ export class NotesListWithEditorComponent implements OnInit {
       const filteredBySelectedId = this.notes.filter(n => n.id == this.noteId)
       if (filteredBySelectedId.length == 1) {
         const noteToSelect = filteredBySelectedId[0]
-        this.selectedNote = noteToSelect
+        this.selectedNoteInfo = noteToSelect
+        this.selectedNote = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
       }
     } else {
       this.selectFirstNote()
     }
   }
 
-  selectFirstNote() {
+  async selectFirstNote() {
     if (this.notes.length > 0) {
-      this.selectedNote = this.notes[0];
+      this.selectedNoteInfo = this.notes[0]
+      this.selectedNote = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
     }
   }
 
 
-  onNoteClick(note: Note) {
-    this.selectedNote = note
+  async onNoteClick(noteInfo: Note) {
+    this.selectedNoteInfo = noteInfo;
+    this.selectedNote = await this.noteService.loadNoteById(noteInfo.id)
   }
 
 
   async onNewNote() {
     this.selectedNote = await this.createNote()
     this.notes.splice(0, 0, this.selectedNote)
+    this.selectedNoteInfo = this.notes[0]
     this.noteTitleInput.focus()
   }
 
@@ -262,6 +266,21 @@ export class NotesListWithEditorComponent implements OnInit {
     this.noteService.updateNote(this.selectedNote);
   }
 
+  async onDeleteNote() {
+    if (this.selectedNote == null) {
+      return
+    }
+
+    const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
+    this.notes.splice(index, 1);
+    await this.noteService.removeNote(this.selectedNoteInfo.id);
+
+    await this.selectFirstNote()
+  }
+
+  onNoteTitleKeyUp(event) {
+    this.selectedNoteInfo.title = this.selectedNote.title
+  }
   async onDoSync() {
     // Make sync
     await this.syncService.doSync();
@@ -282,6 +301,13 @@ export class NotesListWithEditorComponent implements OnInit {
     } else if (this.mode == 'folder') {
       this.notes = await this.noteService.searchNotes(this.searchFilter, this.currentFolder.id)
     }
+
+    if (this.notes.length > 0) {
+      await this.selectFirstNote();
+    } else {
+      this.selectedNote.title = ''
+      this.selectedNote.text = ''
+    }
   }
 
   async handleEditorClick(event: any) {
@@ -298,5 +324,9 @@ export class NotesListWithEditorComponent implements OnInit {
 
   async onAddToFavorites() {
     this.noteService.addToFavorites(this.selectedNote.id)
+  }
+
+  onNoteNameInputFocusOut() {
+    this.onSaveNote();
   }
 }
