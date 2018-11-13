@@ -44,7 +44,7 @@ export class NotesListWithEditorComponent implements OnInit {
 
     this.eventBusService.getMessages().subscribe(e => {
       if (e instanceof SyncFinishedEvent) {
-        this.loadData()        
+        this.loadData()
       }
     })
 
@@ -97,13 +97,13 @@ export class NotesListWithEditorComponent implements OnInit {
         this.noteEditor = editor;
         this.localEvents.next({type: 'editorReady'})
       }
-    };    
+    };
   }
 
   constructor(iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     private route: ActivatedRoute,
-    private localNoteService: LocalNoteService,
+    private noteService: LocalNoteService,
     public authService: AuthService,
     private syncService: SyncService,
     private eventBusService: EventBusService
@@ -156,8 +156,8 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   async buildTreeFromNodesList(): Promise<Folder> {
-    const folders = await this.localNoteService.getAllFolders(false)
-    const notes = await this.localNoteService.getAllNotes(false)
+    const folders = await this.noteService.getAllFolders(false)
+    const notes = await this.noteService.getAllNotes(false)
 
     folders.sort((a, b) => a.level - b.level)
     notes.sort((a, b) => a.level - b.level)
@@ -190,13 +190,13 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   async loadAllNotes() {
-    this.notes = await this.localNoteService.getAllNotes(false)
-    this.currentFolder = await this.localNoteService.getRootFolder()
+    this.notes = await this.noteService.getAllNotes(false)
+    this.currentFolder = await this.noteService.getRootFolder()
     this.selectFirstNote()
   }
 
   async loadFavorites() {
-    this.notes = await this.localNoteService.getFavoriteNotes()
+    this.notes = await this.noteService.getFavoriteNotes()
     this.selectFirstNote()
   }
 
@@ -204,35 +204,35 @@ export class NotesListWithEditorComponent implements OnInit {
     this.selectedNote.text = ''
     this.selectedNote.title = ''
 
-    this.notes = await this.localNoteService.loadNotesByFolder(folderId)
-    this.currentFolder = await this.localNoteService.loadFolderById(folderId)
-    
+    this.notes = await this.noteService.loadNotesByFolder(folderId)
+    this.currentFolder = await this.noteService.loadFolderById(folderId)
+
     if (this.noteId != null) {
       const filteredBySelectedId = this.notes.filter(n => n.id == this.noteId)
       if (filteredBySelectedId.length == 1) {
-        const noteToSelect = filteredBySelectedId[0]        
-        this.selectedNote = noteToSelect        
+        const noteToSelect = filteredBySelectedId[0]
+        this.selectedNote = noteToSelect
       }
     } else {
-      this.selectFirstNote() 
+      this.selectFirstNote()
     }
   }
 
   selectFirstNote() {
-    if (this.notes.length > 0) {      
-      this.selectedNote = this.notes[0];      
+    if (this.notes.length > 0) {
+      this.selectedNote = this.notes[0];
     }
   }
 
 
   onNoteClick(note: Note) {
-    this.selectedNote = note    
+    this.selectedNote = note
   }
 
 
   async onNewNote() {
-    this.selectedNote = await this.createNote()    
-    this.notes.splice(0, 0, this.selectedNote)    
+    this.selectedNote = await this.createNote()
+    this.notes.splice(0, 0, this.selectedNote)
     this.noteTitleInput.focus()
   }
 
@@ -247,7 +247,7 @@ export class NotesListWithEditorComponent implements OnInit {
     let now = new Date()
     note.createdAt = now
     note.updatedAt = now
-    await this.localNoteService.uploadNote(note)
+    await this.noteService.uploadNote(note)
     return Promise.resolve(note)
   }
 
@@ -259,13 +259,13 @@ export class NotesListWithEditorComponent implements OnInit {
     this.selectedNote.text = this.noteEditor.getContent();
 
     this.selectedNote.updatedAt = new Date();
-    this.localNoteService.updateNote(this.selectedNote);
+    this.noteService.updateNote(this.selectedNote);
   }
 
   async onDoSync() {
     // Make sync
     await this.syncService.doSync();
-    this.eventBusService.sendMessage(new SyncFinishedEvent())  
+    this.eventBusService.sendMessage(new SyncFinishedEvent())
   }
 
   isSyncing() {
@@ -278,9 +278,9 @@ export class NotesListWithEditorComponent implements OnInit {
 
   async searchNotes() {
     if (this.mode == 'all') {
-      this.notes = await this.localNoteService.searchNotes(this.searchFilter, null)
+      this.notes = await this.noteService.searchNotes(this.searchFilter, null)
     } else if (this.mode == 'folder') {
-      this.notes = await this.localNoteService.searchNotes(this.searchFilter, this.currentFolder.id)
+      this.notes = await this.noteService.searchNotes(this.searchFilter, this.currentFolder.id)
     }
   }
 
@@ -297,6 +297,6 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   async onAddToFavorites() {
-    this.localNoteService.addToFavorites(this.selectedNote.id)
+    this.noteService.addToFavorites(this.selectedNote.id)
   }
 }

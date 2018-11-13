@@ -4,7 +4,6 @@ import { TreeItem, TreeFolderItem } from '../model/ui/tree-item';
 import { AuthService } from '../services/auth-service';
 import { SocialAuthService } from '../services/social-auth/social-auth-service';
 import { LocalNoteService } from '../services/local-note-service';
-import { RemoteNoteService } from '../services/remote-note-service';
 import { SyncService } from '../services/sync-service';
 import { EventBusService } from '../services/event-bus-service';
 import { NavigationTreeComponent } from './navigation-tree/navigation-tree.component';
@@ -33,8 +32,7 @@ export class HomeComponent implements OnInit {
     private authService: AuthService,
     private syncService: SyncService,
     private socialAuthService: SocialAuthService,
-    private localNoteService: LocalNoteService,
-    private remoteNoteService: RemoteNoteService,
+    private noteService: LocalNoteService,
     private eventBusService: EventBusService,
     private router: Router, ) {
 
@@ -61,20 +59,20 @@ export class HomeComponent implements OnInit {
       return;
     }
     await this.syncService.doSync();
-    this.eventBusService.sendMessage(new SyncFinishedEvent())  
+    this.eventBusService.sendMessage(new SyncFinishedEvent())
   }
 
   async onHandleNoteNavigation(noteId : string) {
-    const note = await this.localNoteService.loadNoteById(noteId)
+    const note = await this.noteService.loadNoteById(noteId)
     await this.navigationTree.clearAnySelection(this.rootItem)
     const folderItem = this.treeItemsMap.get(note.folderId)
     this.makeSelectedWithExpandingParents(folderItem)
     this.zone.run(() => {
       this.router.navigate(['list', { mode: 'folder', folderId: note.folderId, noteId: noteId }], { relativeTo: this.route })
-    })    
+    })
   }
 
-  makeSelectedWithExpandingParents(curItem: TreeItem) {    
+  makeSelectedWithExpandingParents(curItem: TreeItem) {
     let item = curItem;
     item.isSelected = true
     while (item.parent != null) {
@@ -82,8 +80,8 @@ export class HomeComponent implements OnInit {
       if (!item.expanded) {
         item.expanded = true
       }
-    }    
-  }  
+    }
+  }
 
   async init() {
     await this.loadItems();
@@ -118,9 +116,9 @@ export class HomeComponent implements OnInit {
   }
 
   async loadChildrenToFolder(root: TreeFolderItem) {
-    const foldersList = await this.localNoteService.getAllFolders(false)
+    const foldersList = await this.noteService.getAllFolders(false)
     const sortedFoldersList = foldersList.sort((a, b) => a.level - b.level);
-    
+
     this.treeItemsMap.set(sortedFoldersList[0].id, root)
 
     for (let i = 1; i < sortedFoldersList.length; i++) {
@@ -142,13 +140,13 @@ export class HomeComponent implements OnInit {
       parentItem.subItems.push(curTreeItem)
       this.treeItemsMap.set(curFolder.id, curTreeItem)
     }
-    
+
     return Promise.resolve(root)
   }
 
   async loadItems() {
 
-    // Pseudo root item    
+    // Pseudo root item
 
     this.allNotesMenuItem.onClick = (item: any) => {
       this.onAllNotesClick(this, item)
@@ -170,7 +168,7 @@ export class HomeComponent implements OnInit {
 
     this.items.push(favoritesMenuItem)
 
-    const rootFolder = await this.localNoteService.getRootFolder();
+    const rootFolder = await this.noteService.getRootFolder();
 
     this.myNotesMenuItem = new TreeFolderItem();
     this.myNotesMenuItem.folderId = rootFolder.id;
