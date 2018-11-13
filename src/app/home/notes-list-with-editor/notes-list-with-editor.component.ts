@@ -223,6 +223,9 @@ export class NotesListWithEditorComponent implements OnInit {
     if (this.notes.length > 0) {
       this.selectedNoteInfo = this.notes[0]
       this.selectedNote = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
+    } else {
+      this.selectedNote.title = ''
+      this.selectedNote.text = ''
     }
   }
 
