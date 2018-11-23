@@ -27,6 +27,7 @@ export class NotesListWithEditorComponent implements OnInit {
   public searchFilter: string;
   notes = Array<Note>();
   selectedNote = new Note();
+  folderOfSelectedNote: Folder;
   selectedNoteInfo = new Note();
   currentFolder: Folder;
   noteEditor: any;
@@ -201,8 +202,8 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   async loadNotes(folderId: string) {
-    this.selectedNote.text = ''
-    this.selectedNote.title = ''
+    this.selectedNote.text = '';
+    this.selectedNote.title = '';
 
     this.notes = await this.noteService.loadNotesByFolder(folderId)
     this.currentFolder = await this.noteService.loadFolderById(folderId)
@@ -211,7 +212,7 @@ export class NotesListWithEditorComponent implements OnInit {
       const filteredBySelectedId = this.notes.filter(n => n.id == this.noteId)
       if (filteredBySelectedId.length == 1) {
         const noteToSelect = filteredBySelectedId[0]
-        this.selectedNoteInfo = noteToSelect
+        this.selectedNoteInfo = noteToSelect;
         this.selectedNote = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
       }
     } else {
@@ -223,9 +224,11 @@ export class NotesListWithEditorComponent implements OnInit {
     if (this.notes.length > 0) {
       this.selectedNoteInfo = this.notes[0]
       this.selectedNote = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
+      this.folderOfSelectedNote = await this.noteService.loadFolderById(this.selectedNote.folderId);
     } else {
-      this.selectedNote.title = ''
-      this.selectedNote.text = ''
+      this.selectedNote.title = '';
+      this.selectedNote.text = '';
+      this.folderOfSelectedNote = null;
     }
   }
 
@@ -233,11 +236,13 @@ export class NotesListWithEditorComponent implements OnInit {
   async onNoteClick(noteInfo: Note) {
     this.selectedNoteInfo = noteInfo;
     this.selectedNote = await this.noteService.loadNoteById(noteInfo.id)
+    this.folderOfSelectedNote = await this.noteService.loadFolderById(this.selectedNote.folderId);
   }
 
 
   async onNewNote() {
     this.selectedNote = await this.createNote()
+    this.folderOfSelectedNote = await this.noteService.loadFolderById(this.selectedNote.folderId);
     this.notes.splice(0, 0, this.selectedNote)
     this.selectedNoteInfo = this.notes[0]
     this.noteTitleInput.focus()
