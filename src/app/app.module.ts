@@ -75,12 +75,13 @@ import {
   MatSlideToggleModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTreeModule,  
+  MatTreeModule,
   MatProgressBarModule
 } from '@angular/material';
 import { EventBusService } from './services/event-bus-service';
 import { DataService } from './services/data-service';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { SelectFolderDialogComponent } from './home/select-folder-dialog/select-folder-dialog.component';
 
 @NgModule({
   declarations: [
@@ -93,12 +94,14 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
     SettingsComponent,
     LoginComponent,
     HomeComponent,
-    ForgotPasswordComponent
+    ForgotPasswordComponent,
+    SelectFolderDialogComponent
   ],
   entryComponents:
     [
       AddFolderDialogComponent,
-      RenameFolderDialogComponent
+      RenameFolderDialogComponent,
+      SelectFolderDialogComponent
     ],
   imports: [
     BrowserModule,

@@ -9,7 +9,7 @@
 
   <span fxFlex></span>
 
-  <button mat-button *ngIf="folderOfSelectedNote != null">
+  <button mat-button *ngIf="folderOfSelectedNote != null" (click)="onChangeFolder()">
     <mat-icon>folder</mat-icon> {{ folderOfSelectedNote.title }}
   </button>
 

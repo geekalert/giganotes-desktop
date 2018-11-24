@@ -1,3 +1,4 @@
+import { SelectFolderDialogComponent } from './../select-folder-dialog/select-folder-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatIconRegistry, MatInput } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -13,6 +14,7 @@ import { EventBusService } from '../../services/event-bus-service';
 import { NavigateEvent } from '../../model/events/navigate-event';
 import { Observable, Subject } from 'rxjs'
 import { SyncFinishedEvent } from '../../model/events/sync-finished';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-notes-list-with-editor',
@@ -108,7 +110,8 @@ export class NotesListWithEditorComponent implements OnInit {
     private noteService: LocalNoteService,
     public authService: AuthService,
     private syncService: SyncService,
-    private eventBusService: EventBusService
+    private eventBusService: EventBusService,
+    private dialog: MatDialog
   ) {
     // To avoid XSS attacks, the URL needs to be trusted from inside of your application.
     const avatarsSafeUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/avatars.svg');
@@ -336,5 +339,29 @@ export class NotesListWithEditorComponent implements OnInit {
 
   onNoteNameInputFocusOut() {
     this.onSaveNote();
+  }
+
+  onChangeFolder() {
+    const dialogRef = this.dialog.open(SelectFolderDialogComponent, {
+      width: '450px',
+      height: '450px',
+      data : {
+        selectedFolderId : this.folderOfSelectedNote.id
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.folderId !== this.folderOfSelectedNote.id) {
+        this.selectedNote.folderId = result.folderId;
+        this.noteService.updateNote(this.selectedNote);
+        this.noteService.loadFolderById(result.folderId).then(folder => {
+          this.folderOfSelectedNote = folder;
+
+          if (this.mode === 'folder') {
+            this.eventBusService.sendMessage(new NavigateEvent(this.selectedNote.id));
+          }
+        });
+      }
+    });
   }
 }
