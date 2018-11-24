@@ -1,3 +1,4 @@
+import { SelectFolderDialogComponent } from './../select-folder-dialog/select-folder-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatIconRegistry, MatInput } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -13,6 +14,7 @@ import { EventBusService } from '../../services/event-bus-service';
 import { NavigateEvent } from '../../model/events/navigate-event';
 import { Observable, Subject } from 'rxjs'
 import { SyncFinishedEvent } from '../../model/events/sync-finished';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-notes-list-with-editor',
@@ -27,6 +29,7 @@ export class NotesListWithEditorComponent implements OnInit {
   public searchFilter: string;
   notes = Array<Note>();
   selectedNote = new Note();
+  folderOfSelectedNote: Folder;
   selectedNoteInfo = new Note();
   currentFolder: Folder;
   noteEditor: any;
@@ -107,7 +110,8 @@ export class NotesListWithEditorComponent implements OnInit {
     private noteService: LocalNoteService,
     public authService: AuthService,
     private syncService: SyncService,
-    private eventBusService: EventBusService
+    private eventBusService: EventBusService,
+    private dialog: MatDialog
   ) {
     // To avoid XSS attacks, the URL needs to be trusted from inside of your application.
     const avatarsSafeUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/avatars.svg');
@@ -201,8 +205,8 @@ export class NotesListWithEditorComponent implements OnInit {
   }
 
   async loadNotes(folderId: string) {
-    this.selectedNote.text = ''
-    this.selectedNote.title = ''
+    this.selectedNote.text = '';
+    this.selectedNote.title = '';
 
     this.notes = await this.noteService.loadNotesByFolder(folderId)
     this.currentFolder = await this.noteService.loadFolderById(folderId)
@@ -211,7 +215,7 @@ export class NotesListWithEditorComponent implements OnInit {
       const filteredBySelectedId = this.notes.filter(n => n.id == this.noteId)
       if (filteredBySelectedId.length == 1) {
         const noteToSelect = filteredBySelectedId[0]
-        this.selectedNoteInfo = noteToSelect
+        this.selectedNoteInfo = noteToSelect;
         this.selectedNote = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
       }
     } else {
@@ -223,9 +227,11 @@ export class NotesListWithEditorComponent implements OnInit {
     if (this.notes.length > 0) {
       this.selectedNoteInfo = this.notes[0]
       this.selectedNote = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
+      this.folderOfSelectedNote = await this.noteService.loadFolderById(this.selectedNote.folderId);
     } else {
-      this.selectedNote.title = ''
-      this.selectedNote.text = ''
+      this.selectedNote.title = '';
+      this.selectedNote.text = '';
+      this.folderOfSelectedNote = null;
     }
   }
 
@@ -233,11 +239,13 @@ export class NotesListWithEditorComponent implements OnInit {
   async onNoteClick(noteInfo: Note) {
     this.selectedNoteInfo = noteInfo;
     this.selectedNote = await this.noteService.loadNoteById(noteInfo.id)
+    this.folderOfSelectedNote = await this.noteService.loadFolderById(this.selectedNote.folderId);
   }
 
 
   async onNewNote() {
     this.selectedNote = await this.createNote()
+    this.folderOfSelectedNote = await this.noteService.loadFolderById(this.selectedNote.folderId);
     this.notes.splice(0, 0, this.selectedNote)
     this.selectedNoteInfo = this.notes[0]
     this.noteTitleInput.focus()
@@ -331,5 +339,29 @@ export class NotesListWithEditorComponent implements OnInit {
 
   onNoteNameInputFocusOut() {
     this.onSaveNote();
+  }
+
+  onChangeFolder() {
+    const dialogRef = this.dialog.open(SelectFolderDialogComponent, {
+      width: '450px',
+      height: '450px',
+      data : {
+        selectedFolderId : this.folderOfSelectedNote.id
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.folderId !== this.folderOfSelectedNote.id) {
+        this.selectedNote.folderId = result.folderId;
+        this.noteService.updateNote(this.selectedNote);
+        this.noteService.loadFolderById(result.folderId).then(folder => {
+          this.folderOfSelectedNote = folder;
+
+          if (this.mode === 'folder') {
+            this.eventBusService.sendMessage(new NavigateEvent(this.selectedNote.id));
+          }
+        });
+      }
+    });
   }
 }

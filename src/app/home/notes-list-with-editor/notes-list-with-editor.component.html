@@ -1,13 +1,18 @@
-<div>
+<div fxLayout="row" style="border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: #cfd8dc">
   <button *ngIf="mode != 'fav'" mat-button (click)="onNewNote()">
     <mat-icon>add</mat-icon>New note
   </button>
-  <button *ngIf="mode != 'fav'" mat-button (click)="onAddToFavorites()">
-    <mat-icon>favorite</mat-icon>Add to favorites
-  </button>
+
   <button mat-button (click)="onDoSync()" *ngIf="!authService.isOffline">
     <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>Syncronize
   </button>
+
+  <span fxFlex></span>
+
+  <button mat-button *ngIf="folderOfSelectedNote != null" (click)="onChangeFolder()">
+    <mat-icon>folder</mat-icon> {{ folderOfSelectedNote.title }}
+  </button>
+
 </div>
 
 
@@ -42,13 +47,16 @@
           (keyup)="onNoteTitleKeyUp($event);" (focusout)="onNoteNameInputFocusOut()">
 
         <button mat-button (click)="onSaveNote()">
-          <mat-icon>save</mat-icon>Save
+          <mat-icon>save</mat-icon>
         </button>
 
         <button mat-button (click)="onDeleteNote()">
-          <mat-icon>delete</mat-icon>Delete
+          <mat-icon>delete</mat-icon>
         </button>
 
+        <button *ngIf="mode != 'fav'" mat-button (click)="onAddToFavorites()">
+          <mat-icon>favorite</mat-icon>
+        </button>
       </div>
       <editor [init]="editorSetup" fxLayout="column" style="height:100%; width:100%" [(ngModel)]="selectedNote.text"
         (onClick)="handleEditorClick($event)"></editor>
