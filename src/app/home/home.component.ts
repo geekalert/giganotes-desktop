@@ -9,6 +9,7 @@ import { EventBusService } from '../services/event-bus-service';
 import { NavigationTreeComponent } from './navigation-tree/navigation-tree.component';
 import { NavigateEvent } from '../model/events/navigate-event';
 import { SyncFinishedEvent } from '../model/events/sync-finished';
+import { NavTreeEventsService } from '../services/nav-tree-events-.service';
 
 @Component({
   selector: 'app-home',
@@ -24,10 +25,11 @@ export class HomeComponent implements OnInit {
   rootItem = new TreeFolderItem();
   myNotesMenuItem: TreeFolderItem;
   treeItemsMap = new Map<string, TreeItem>();
+  navTreeEventsService = new NavTreeEventsService();
 
   @ViewChild(NavigationTreeComponent) navigationTree: NavigationTreeComponent;
 
-  constructor(private zone:NgZone,
+  constructor(private zone: NgZone,
     private route: ActivatedRoute,
     private authService: AuthService,
     private syncService: SyncService,
@@ -39,6 +41,13 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.navTreeEventsService.getEvents().subscribe(event => {
+      if (event.type === 'folderCreated') {
+        this.treeItemsMap.set(event.item.folderId, event.item);
+      }
+    });
+
     this.eventBusService.getMessages().subscribe(e => {
       if (e instanceof NavigateEvent) {
         this.onHandleNoteNavigation(e.noteId)
@@ -62,7 +71,7 @@ export class HomeComponent implements OnInit {
     this.eventBusService.sendMessage(new SyncFinishedEvent())
   }
 
-  async onHandleNoteNavigation(noteId : string) {
+  async onHandleNoteNavigation(noteId: string) {
     const note = await this.noteService.loadNoteById(noteId)
     await this.navigationTree.clearAnySelection(this.rootItem)
     const folderItem = this.treeItemsMap.get(note.folderId)

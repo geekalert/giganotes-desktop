@@ -8,6 +8,7 @@ import { Folder } from '../../model/folder';
 import { v4 as uuid } from 'uuid';
 import { LocalNoteService } from '../../services/local-note-service';
 import { AuthService } from '../../services/auth-service';
+import { NavTreeEventsService } from '../../services/nav-tree-events-.service';
 
 @Component({
   selector: 'app-navigation-tree',
@@ -18,11 +19,12 @@ export class NavigationTreeComponent implements OnInit {
 
   @Input() public items: Array<TreeItem>;
   @Input() public level = 0;
+  @Input() public navTreeEventsService: NavTreeEventsService;
 
   constructor(private router: Router,
-     private dialog: MatDialog,
-     private noteService: LocalNoteService,
-     private authService: AuthService) { }
+    private dialog: MatDialog,
+    private noteService: LocalNoteService,
+    private authService: AuthService) { }
 
   ngOnInit() {
   }
@@ -64,7 +66,7 @@ export class NavigationTreeComponent implements OnInit {
     folder.createdAt = now
     folder.updatedAt = now
     folder.id = uuid()
-    folder.title= folderName
+    folder.title = folderName
     folder.parentId = parent.id
     folder.level = parent.level + 1
     folder.userId = this.authService.userId
@@ -76,7 +78,7 @@ export class NavigationTreeComponent implements OnInit {
     parentTreeItem.expanded = true
 
     treeItem.folderId = folder.id;
-    treeItem.isSelected =false
+    treeItem.isSelected = false
     treeItem.showMenuButton = true;
     treeItem.hasAddButton = true;
     treeItem.iconName = 'folder'
@@ -89,6 +91,9 @@ export class NavigationTreeComponent implements OnInit {
 
     treeItem.onClick(treeItem)
 
+    if (this.navTreeEventsService != null) {
+      this.navTreeEventsService.sendEvent({ type: 'folderCreated', item: treeItem });
+    }
   }
 
   onRenameFolder(item: TreeFolderItem) {
