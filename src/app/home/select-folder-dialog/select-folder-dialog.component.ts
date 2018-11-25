@@ -23,6 +23,9 @@ export class SelectFolderDialogComponent implements OnInit {
     this.rootItem.iconName = 'folder';
     this.rootItem.name = 'Root';
     this.rootItem.expanded = true;
+    this.rootItem.onClick = (item: any) => {
+      this.selectedItem = item;
+    }
     this.loadChildrenToFolder(this.rootItem);
   }
 
