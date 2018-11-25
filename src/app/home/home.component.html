@@ -28,8 +28,8 @@
   <div class="content" style="height: 100%">
 
     <div resizable [sizerBarPosition]="2" fxFlex="20" style="height: 100%">
-      <div style="overflow: auto; height: 100%;">      
-        <app-navigation-tree [items]="items" ></app-navigation-tree>
+      <div style="overflow: auto; height: 100%;">
+        <app-navigation-tree [items]="items" [navTreeEventsService]="navTreeEventsService"></app-navigation-tree>
       </div>
     </div>
 
