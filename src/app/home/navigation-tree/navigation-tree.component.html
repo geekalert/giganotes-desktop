@@ -1,6 +1,6 @@
 <mat-list [ngStyle]="{'margin-left': level + 'px'}">
   <div *ngFor="let item of items">
-    <mat-list-item [class.list-item-selected]="item.isSelected" (click)="onSelectedItemClick(item)">
+    <mat-list-item [class.list-item-selected]="item.isSelected" (click)="onSelectedItemClick(item)" mwlDroppable (drop)="onDrop($event, item)">
       <ng-container *ngIf="!item.showMenuButton || !item.isSelected">
         <mat-menu #appMenu="matMenu">
           <button mat-menu-item (click)="onAddFolder(item)">Add folder</button>

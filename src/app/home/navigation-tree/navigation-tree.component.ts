@@ -123,4 +123,12 @@ export class NavigationTreeComponent implements OnInit {
     item.parent.isSelected = true
   }
 
+  async onDrop(dropEvent: any, item: TreeItem) {
+    if (item instanceof TreeFolderItem) {
+      const note = await this.noteService.loadNoteById(dropEvent.dropData);
+      note.folderId = item.folderId;
+      await this.noteService.updateNote(note);
+      this.onSelectedItemClick(item);
+    }
+  }
 }
