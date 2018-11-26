@@ -9,7 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ResizableDirective } from './directives/resizable.directive';
-
+import { DragAndDropModule } from 'angular-draggable-droppable';
 import { EditorModule } from '@tinymce/tinymce-angular';
 
 import { NotesListWithEditorComponent } from './home/notes-list-with-editor/notes-list-with-editor.component';
@@ -134,6 +134,7 @@ import { SelectFolderDialogComponent } from './home/select-folder-dialog/select-
     EditorModule,
     HomeRoutingModule,
     AppRoutingModule,
+    DragAndDropModule
   ],
   providers: [DbService,
     LoggerService,

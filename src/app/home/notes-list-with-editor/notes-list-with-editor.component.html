@@ -30,7 +30,8 @@
 
       <div style="overflow: auto; height:100%;">
         <mat-nav-list>
-          <mat-list-item *ngFor="let note of notes" (click)="onNoteClick(note)" [class.list-item-selected]="this.selectedNoteInfo == note">
+          <mat-list-item *ngFor="let note of notes" (click)="onNoteClick(note)" [class.list-item-selected]="this.selectedNoteInfo == note"
+            mwlDraggable [dropData]="note.id" [showOriginalElementWhileDragging]="true">
             <mat-icon matListIcon class="avatar">description</mat-icon>
             <span *ngIf="note.title.length > 0">{{note.title}}</span>
             <span *ngIf="note.title.length == 0">Untitled note</span>
