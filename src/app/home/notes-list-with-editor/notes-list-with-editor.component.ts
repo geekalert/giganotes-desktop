@@ -51,6 +51,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
   treeItemsMap = new Map<string, TreeItem>();
   navTreeEventsService = new NavTreeEventsService();
   isNavMenuLoaded = false;
+  isSyncOnInitDone = false;
 
   isEditorScriptLoaded = false;
   public searchFilter: string;
@@ -95,30 +96,16 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild("noteTitleInput") noteTitleInput: MatInput;
-
-  private localEvents = new Subject<any>();
-
+  
   ngOnInit() {
-  this.eventBusService.getMessages().subscribe(e => {
-      if (e instanceof SyncFinishedEvent) {
-        this.loadListItems();
-      }
-
+    this.eventBusService.getMessages().subscribe(e => {
       if (e instanceof ScreenChangedEvent) {
         if (e.isMobile) {
           this.showMobileList = this.noteId == null;
           this.mobileShowBackButton = !this.showMobileList;
         }
       }
-
-      if (e instanceof SyncFinishedEvent) {
-          this.loadMenuItems().then(i => {
-            this.loadListItems();
-          });
-      }
     });
-
-    this.doSync();
 
     this.dynamicScriptLoaderService.loadScript('assets/tinymce/tinymce.min.js').then(r => {
       this.isEditorScriptLoaded = true;
@@ -153,6 +140,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
         this.mobileShowBackButton = !this.showMobileList;
       }
 
+      this.loadData();
+
       if (!this.screenService.isMobile || this.noteId != null) {
         const parent = this;
         this.editorSetup = {
@@ -185,24 +174,35 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
           paste_data_images: true,
           setup: editor => {
             this.noteEditor = editor;
-            this.localEvents.next({ type: "editorReady" });
           }
         };
       }
 
-      if (!this.isNavMenuLoaded) {
-        this.loadMenuItems();
-      }
-
-      if (this.mode !== this.prevMode || this.folderId !== this.prevFolderId) {
-        this.loadListItems();
-      } else {
-        this.loadSpecificOrFirstNote();
-      }
     });
 
     if (this.screenService.isMobile) {
       document.addEventListener('backbutton', this.onBack.bind(this), false);
+    }
+  }
+
+  async loadData() {
+    if (!this.isNavMenuLoaded) {
+      await this.loadMenuItems();
+    }
+
+    if (this.mode !== this.prevMode || this.folderId !== this.prevFolderId) {
+      await this.loadListItems();
+    } else {
+      await this.loadSpecificOrFirstNote();
+    }
+
+    if (!this.isSyncOnInitDone) {
+      this.isSyncOnInitDone = true;
+      await this.doSync();
+
+      // We should reload menu items and list items after sync
+      await this.loadMenuItems();
+      await this.loadListItems();
     }
   }
 

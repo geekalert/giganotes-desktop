@@ -188,6 +188,14 @@
         <mat-icon>check</mat-icon>
       </button>
 
+      <button      
+      *ngIf="mobileShowBackButton && folderOfSelectedNote != null"
+      (click)="onChangeFolder()"
+      mat-icon-button
+      >
+      <mat-icon>folder</mat-icon>
+      </button>      
+
     </mat-toolbar-row>
   </mat-toolbar>
 
