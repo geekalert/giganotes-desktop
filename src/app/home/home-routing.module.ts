@@ -15,6 +15,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { DragAndDropModule } from 'angular-draggable-droppable';
 
 import {
   MatButtonModule,
@@ -69,6 +70,7 @@ const homeRoutes: Routes = [
     EditorModule,
     LayoutModule,
     CommonModule,
+    DragAndDropModule
   ],
   exports: [
     RouterModule,
