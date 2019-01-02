@@ -1,40 +1,98 @@
-import { $AT } from 'codelyzer/angular/styles/chars';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { HomeComponent } from './home.component';
+import { NavigationTreeComponent } from '../home/navigation-tree/navigation-tree.component';
 import { NotesListWithEditorComponent } from './notes-list-with-editor/notes-list-with-editor.component';
+import { AddFolderDialogComponent } from '../home/add-folder-dialog/add-folder-dialog.component';
+import { RenameFolderDialogComponent } from '../home/rename-folder-dialog/rename-folder-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
-import { AuthGuard } from '../guards/auth-guard';
-import { from } from 'rxjs'
+import { SelectFolderDialogComponent } from '../home/select-folder-dialog/select-folder-dialog.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { LayoutModule } from '@angular/cdk/layout';
+import { ResizableDirective } from '../directives/resizable.directive';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EditorModule } from '@tinymce/tinymce-angular';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatDialogModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatSelectModule,
+  MatSidenavModule,
+  MatSlideToggleModule,
+  MatTabsModule,
+  MatToolbarModule,
+  MatTreeModule,
+  MatProgressBarModule
+} from '@angular/material';
+
 
 const homeRoutes: Routes = [
-  {
-    path: 'home',
-    component: HomeComponent,
-    canActivate: [AuthGuard],
-    children: [
       {
         path: '',
         component: NotesListWithEditorComponent
       },
       {
-        path: 'list',
-        component: NotesListWithEditorComponent,
-      },
-      {
         path: 'settings',
         component: SettingsComponent
       }
-    ]
-  }
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forChild(homeRoutes)
+    RouterModule.forChild(homeRoutes),
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSlideToggleModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTreeModule,
+    MatProgressBarModule,
+    FlexLayoutModule,
+    EditorModule,
+    LayoutModule,
+    CommonModule,
   ],
   exports: [
-    RouterModule
+    RouterModule,
+    NotesListWithEditorComponent,
+    NavigationTreeComponent,
+    AddFolderDialogComponent,
+    RenameFolderDialogComponent,
+    SelectFolderDialogComponent,
+    SettingsComponent
+  ],
+  entryComponents:
+    [
+      AddFolderDialogComponent,
+      RenameFolderDialogComponent,
+      SelectFolderDialogComponent
+    ],
+  declarations: [
+    ResizableDirective,
+    NotesListWithEditorComponent,
+    NavigationTreeComponent,
+    AddFolderDialogComponent,
+    RenameFolderDialogComponent,
+    SelectFolderDialogComponent,
+    SettingsComponent
   ]
 })
 export class HomeRoutingModule { }

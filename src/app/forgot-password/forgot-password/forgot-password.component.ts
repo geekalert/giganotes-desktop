@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AppConfig } from '../../environments/environment';
+import { AppConfig } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 @Component({

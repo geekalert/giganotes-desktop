@@ -1,27 +1,15 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { ScreenService } from './services/screen.service';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
+import { LayoutModule } from '@angular/cdk/layout';
 import { AppComponent } from './app.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ResizableDirective } from './directives/resizable.directive';
-import { DragAndDropModule } from 'angular-draggable-droppable';
-import { EditorModule } from '@tinymce/tinymce-angular';
 
-import { NotesListWithEditorComponent } from './home/notes-list-with-editor/notes-list-with-editor.component';
-import { AppRoutingModule } from './/app-routing.module';
-import { NavigationTreeComponent } from './home/navigation-tree/navigation-tree.component';
-import { SettingsComponent } from './home/settings/settings.component';
-import { LoginComponent } from './login/login.component';
-import { HomeComponent } from './home/home.component';
-import { AddFolderDialogComponent } from './home/add-folder-dialog/add-folder-dialog.component';
-import { RenameFolderDialogComponent } from './home/rename-folder-dialog/rename-folder-dialog.component';
-
-import { HomeRoutingModule } from './home/home-routing.module';
+import { AppRoutingModule } from './app-routing.module';
 
 import { APP_INITIALIZER } from '@angular/core';
 
@@ -80,31 +68,13 @@ import {
 } from '@angular/material';
 import { EventBusService } from './services/event-bus-service';
 import { DataService } from './services/data-service';
-import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { SelectFolderDialogComponent } from './home/select-folder-dialog/select-folder-dialog.component';
+import { DynamicScriptLoaderService } from './services/dynamic-script-loader.service';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ResizableDirective,
-    NotesListWithEditorComponent,
-    NavigationTreeComponent,
-    AddFolderDialogComponent,
-    RenameFolderDialogComponent,
-    SettingsComponent,
-    LoginComponent,
-    HomeComponent,
-    ForgotPasswordComponent,
-    SelectFolderDialogComponent
+    AppComponent
   ],
-  entryComponents:
-    [
-      AddFolderDialogComponent,
-      RenameFolderDialogComponent,
-      SelectFolderDialogComponent
-    ],
   imports: [
-    BrowserModule,
     FormsModule,
     HttpClientModule,
     JwtModule.forRoot({
@@ -131,10 +101,8 @@ import { SelectFolderDialogComponent } from './home/select-folder-dialog/select-
     MatTreeModule,
     MatProgressBarModule,
     FlexLayoutModule,
-    EditorModule,
-    HomeRoutingModule,
     AppRoutingModule,
-    DragAndDropModule
+    LayoutModule
   ],
   providers: [DbService,
     LoggerService,
@@ -148,6 +116,8 @@ import { SelectFolderDialogComponent } from './home/select-folder-dialog/select-
     DataService,
     Storage,
     SocialAuthService,
+    ScreenService,
+    DynamicScriptLoaderService,
     {
       provide: APP_INITIALIZER,
       useFactory: (dbService: DbService) => function () { return dbService.openDatabase() },
