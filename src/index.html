@@ -7,12 +7,28 @@
   <base href="">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="assets/tinymce/tinymce.min.js"></script>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 
 <body>
-  <app-root>Loading...</app-root>
+  <app-root>
+    <style>
+      app-root {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+
+      </style>
+
+      <img src="./assets/logo.png"/>
+  </app-root>
 </body>
 
 </html>
