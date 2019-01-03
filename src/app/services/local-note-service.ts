@@ -12,6 +12,7 @@ import { AuthService } from './auth-service';
 export class LocalNoteService {
 
     allFieldsNote = 'id, title, text, folderId, level, userId, createdAt, updatedAt, deletedAt'
+    allFieldsNoteWithoutText = 'id, title, folderId, level, userId, createdAt, updatedAt, deletedAt'
     allFieldsFolder = 'id, title, parentId, level, userId, createdAt, updatedAt, deletedAt'
 
     constructor(private loggerService: LoggerService,
@@ -162,7 +163,7 @@ export class LocalNoteService {
     }
 
     async loadNotesByFolder(folderId: string): Promise<Note[]> {
-        const childNotesQuery = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ? ORDER BY updatedAt DESC'
+        const childNotesQuery = 'SELECT ' + this.allFieldsNoteWithoutText + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ? ORDER BY updatedAt DESC'
         const childNotesResults = await this.dbService.all(childNotesQuery, [folderId, this.authService.userId])
 
         const childNotes = new Array<Note>();
@@ -173,7 +174,6 @@ export class LocalNoteService {
 
             childNote.id = entry.id;
             childNote.title = entry.title;
-            childNote.text = entry.text;
             childNote.folderId = entry.folderId;
             childNote.level = entry.level;
             childNote.createdAt = new Date(entry.createdAt)
@@ -210,7 +210,7 @@ export class LocalNoteService {
             folder.children.push(childFolder)
         }
 
-        const childNotesQuery = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ? ORDER BY updatedAt DESC'
+        const childNotesQuery = 'SELECT ' + this.allFieldsNoteWithoutText + ' FROM note WHERE deletedAt IS NULL AND folderId = ? AND userId = ? ORDER BY updatedAt DESC'
         const childNotesResults = await this.dbService.all(childNotesQuery, [folder.id, this.authService.userId])
 
         if (childNotesResults.length > 0) {
@@ -223,7 +223,6 @@ export class LocalNoteService {
 
             childNote.id = entry.id;
             childNote.title = entry.title;
-            childNote.text = entry.text;
             childNote.folderId = entry.folderId;
             childNote.level = entry.level;
             childNote.createdAt = new Date(entry.createdAt)
@@ -239,9 +238,9 @@ export class LocalNoteService {
     async getAllNotes(includeDeleted: boolean): Promise<Note[]> {
         var query: string
         if (includeDeleted) {
-            query = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE userId = ? ORDER BY updatedAt DESC'
+            query = 'SELECT ' + this.allFieldsNoteWithoutText + ' FROM note WHERE userId = ? ORDER BY updatedAt DESC'
         } else {
-            query = 'SELECT ' + this.allFieldsNote + ' FROM note WHERE deletedAt IS NULL AND userId = ? ORDER BY updatedAt DESC'
+            query = 'SELECT ' + this.allFieldsNoteWithoutText + ' FROM note WHERE deletedAt IS NULL AND userId = ? ORDER BY updatedAt DESC'
         }
         const results = await this.dbService.all(query, [this.authService.userId])
 
@@ -251,7 +250,6 @@ export class LocalNoteService {
             const note = new Note();
             note.id = entry.id;
             note.title = entry.title;
-            note.text = entry.text;
             note.folderId = entry.folderId;
             note.level = entry.level;
             note.createdAt = new Date(entry.createdAt)
@@ -306,10 +304,10 @@ export class LocalNoteService {
     }
 
     async searchNotes(query: string, folderId: string): Promise<Note[]> {
-        let sqlQuery = 'SELECT id FROM note WHERE deletedAt IS NULL AND (title LIKE "%' + query + '%" OR text LIKE "%' + query + '%") AND userId = ?'
+        let sqlQuery = 'SELECT ' + this.allFieldsNoteWithoutText + ' FROM note WHERE deletedAt IS NULL AND (title LIKE "%' + query + '%" OR text LIKE "%' + query + '%") AND userId = ?'
         let noteResults;
-        
-        if (folderId == null) {            
+
+        if (folderId == null) {
             sqlQuery += ' ORDER BY updatedAt DESC'
             noteResults = await this.dbService.all(sqlQuery, [this.authService.userId])
         } else {
@@ -319,23 +317,31 @@ export class LocalNoteService {
         const notes = Array<Note>();
         for (let i = 0; i < noteResults.length; i++) {
             const entry = noteResults.item(i);
-            notes.push(await this.loadNoteById(entry.id))
+
+            const note = new Note();
+            note.id = entry.id;
+            note.title = entry.title;
+            note.folderId = entry.folderId;
+            note.level = entry.level;
+            note.createdAt = new Date(entry.createdAt);
+            note.updatedAt = new Date(entry.updatedAt);
+            note.userId = entry.userId;
+            notes.push(note);
         }
 
-        return Promise.resolve(notes)
+        return Promise.resolve(notes);
     }
 
     async getFavoriteNotes(): Promise<Note[]> {
-        let sqlQuery = 'SELECT n.id, n.title, n.text, n.folderId, n.level, n.userId, n.createdAt, n.updatedAt, n.deletedAt FROM note n INNER JOIN favorites f ON n.id = f.noteId AND n.userId = f.userId WHERE deletedAt IS NULL AND n.userId = ? ORDER BY n.updatedAt DESC'
+        let sqlQuery = 'SELECT n.id, n.title, n.folderId, n.level, n.userId, n.createdAt, n.updatedAt, n.deletedAt FROM note n INNER JOIN favorites f ON n.id = f.noteId AND n.userId = f.userId WHERE deletedAt IS NULL AND n.userId = ? ORDER BY n.updatedAt DESC'
         const results = await this.dbService.all(sqlQuery, [this.authService.userId])
-        
+
         const notes = Array<Note>();
         for (let i = 0; i < results.length; i++) {
             const entry = results.item(i);
             const note = new Note();
             note.id = entry.id;
             note.title = entry.title;
-            note.text = entry.text;
             note.folderId = entry.folderId;
             note.level = entry.level;
             note.createdAt = new Date(entry.createdAt)
@@ -343,7 +349,7 @@ export class LocalNoteService {
 
             note.userId = entry.userId
 
-            notes.push(note)            
+            notes.push(note)
         }
 
         return Promise.resolve(notes)
