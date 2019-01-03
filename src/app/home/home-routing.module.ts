@@ -80,7 +80,7 @@ const homeRoutes: Routes = [
     AddFolderDialogComponent,
     RenameFolderDialogComponent,
     SelectFolderDialogComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
     SettingsComponent
   ],
   entryComponents:
