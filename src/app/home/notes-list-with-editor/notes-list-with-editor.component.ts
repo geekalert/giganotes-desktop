@@ -97,7 +97,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild("noteTitleInput") noteTitleInput: MatInput;
-  
+
   ngOnInit() {
     this.eventBusService.getMessages().subscribe(e => {
       if (e instanceof ScreenChangedEvent) {
@@ -646,6 +646,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
     for (let i = 1; i < sortedFoldersList.length; i++) {
       const curFolder = sortedFoldersList[i]
       const parentItem = curFolder.parentId == null ? root : this.treeItemsMap.get(curFolder.parentId)
+
+      // Gracefully handle the exceptional situation when the folder refer to non-existing parent.
+      // It should not happen in most cases. Let's just skip it
+      if (parentItem == null) {
+        continue;
+      }
 
       const curTreeItem = new TreeFolderItem();
 
