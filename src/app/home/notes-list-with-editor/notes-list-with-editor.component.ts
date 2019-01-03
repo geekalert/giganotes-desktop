@@ -26,6 +26,7 @@ import { MatSidenav } from '@angular/material';
 import { DynamicScriptLoaderService } from '../../services/dynamic-script-loader.service';
 import * as Hammer from 'hammerjs';
 import { ScreenChangedEvent } from '../../model/events/screen-changed';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: "app-notes-list-with-editor",
@@ -419,11 +420,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  async onDeleteNoteMobile() {
-    await this.onDeleteNote();
-    this.router.navigate(['/home', { mode: 'folder', folderId: this.currentFolder.id}]);
-  }
-
   async createNote(): Promise<Note> {
     let note = new Note();
     note.title = "";
@@ -450,16 +446,38 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
     this.noteService.updateNote(this.selectedNote);
   }
 
-  async onDeleteNote() {
-    if (this.selectedNote == null) {
-      return;
-    }
 
+  async deleteSelectedNote() {
     const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
     this.notes.splice(index, 1);
     await this.noteService.removeNote(this.selectedNoteInfo.id);
 
     await this.selectFirstNote();
+  }
+
+  async onDeleteNote() {
+    if (this.selectedNote == null) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '250px',
+      data: {
+        title: 'Delete note',
+        text: 'Are you sure you want delete this note?'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.deleteSelectedNote().then(r => {
+          if (this.screenService.isMobile) {
+                this.router.navigate(['/home', { mode: 'folder', folderId: this.currentFolder.id}]);
+          }
+        })
+      }
+    });
+
   }
 
   onNoteTitleKeyUp(event) {

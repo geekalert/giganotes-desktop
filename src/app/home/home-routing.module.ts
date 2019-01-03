@@ -34,6 +34,7 @@ import {
   MatTreeModule,
   MatProgressBarModule
 } from '@angular/material';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 
 const homeRoutes: Routes = [
@@ -79,13 +80,15 @@ const homeRoutes: Routes = [
     AddFolderDialogComponent,
     RenameFolderDialogComponent,
     SelectFolderDialogComponent,
+    ConfirmDialogComponent
     SettingsComponent
   ],
   entryComponents:
     [
       AddFolderDialogComponent,
       RenameFolderDialogComponent,
-      SelectFolderDialogComponent
+      SelectFolderDialogComponent,
+      ConfirmDialogComponent
     ],
   declarations: [
     ResizableDirective,
@@ -94,6 +97,7 @@ const homeRoutes: Routes = [
     AddFolderDialogComponent,
     RenameFolderDialogComponent,
     SelectFolderDialogComponent,
+    ConfirmDialogComponent,
     SettingsComponent
   ]
 })
