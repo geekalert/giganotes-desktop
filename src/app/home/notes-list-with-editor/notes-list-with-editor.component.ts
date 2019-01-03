@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { SelectFolderDialogComponent } from "./../select-folder-dialog/select-folder-dialog.component";
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, NgZone } from "@angular/core";
 import { MatIconRegistry, MatInput } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -34,7 +34,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
   styleUrls: ["./notes-list-with-editor.component.scss"],
   host: { style: "height:100%; display: flex; flex-direction:column" }
 })
-export class NotesListWithEditorComponent implements OnInit, OnDestroy {
+export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild(NavigationTreeComponent) navigationTree: NavigationTreeComponent;
   @ViewChild(MatSidenav) sidenav: MatSidenav;
@@ -63,6 +63,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
   currentFolder: Folder;
   noteEditor: any;
   editorSetup: any;
+  newNoteMobileCreationStarted = false;
   showMobileList = true;
   mobileShowBackButton = false;
 
@@ -183,6 +184,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
 
     if (this.screenService.isMobile) {
       document.addEventListener('backbutton', this.onBack.bind(this), false);
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.screenService.isMobile && !this.showMobileList && this.newNoteMobileCreationStarted) {
+      this.noteTitleInput.focus();
     }
   }
 
@@ -405,6 +412,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
     this.notes.splice(0, 0, this.selectedNote);
     this.selectedNoteInfo = this.notes[0];
 
+    this.newNoteMobileCreationStarted = true;
     this.router.navigate(['/home', { mode: this.mode, folderId: this.selectedNote.folderId, noteId: this.selectedNote.id }]);
   }
 
@@ -633,6 +641,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy {
   }
 
   async onSaveNoteMobile() {
+    this.newNoteMobileCreationStarted = false;
     await this.onSaveNote();
     this.onBack();
   }
