@@ -282,10 +282,21 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     }
   }
 
+  async readToBase64(file) {
+    // read binary data
+    const bitmap = await fs.readFile(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+  }
+
   private addImage() {
     remote.dialog.showOpenDialog({title: 'Select a folder', properties: ['openFile']}, (filePaths) => {
       const filePath = filePaths[0];
-      fs.readFile(filePath);
+      this.readToBase64(filePath).then(imageData => {
+          const base64Image = 'data:image/jpeg;base64,' + imageData;
+          const imgTag = '<img src="' + base64Image + '" width="100%" height="100%">';
+          this.noteEditor.execCommand('mceInsertRawHTML', false, imgTag);
+      });
     });
   }
 

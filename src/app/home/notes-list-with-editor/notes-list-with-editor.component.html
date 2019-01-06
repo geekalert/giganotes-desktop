@@ -126,6 +126,14 @@
               >
                 <mat-icon>favorite</mat-icon>
               </button>
+
+              <button
+                *ngIf="mode != 'fav'"
+                (click)="addImage()"
+              mat-button
+              >
+              <mat-icon>add_a_photo</mat-icon>
+              </button>              
             </div>
             <editor
               *ngIf="isEditorScriptLoaded"
@@ -173,7 +181,8 @@
       <button
         *ngIf="mobileShowBackButton"
         type="button"
-        (click)="onDeleteNote()"
+        (click)="onDeleteNote
+        ()"
         mat-icon-button
       >
         <mat-icon>delete</mat-icon>
