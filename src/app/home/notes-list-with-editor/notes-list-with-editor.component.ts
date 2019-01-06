@@ -14,7 +14,6 @@ import { SyncService } from '../../services/sync-service';
 import { EventBusService } from "../../services/event-bus-service";
 import { ScreenService } from "../../services/screen.service";
 import { NavigateEvent } from "../../model/events/navigate-event";
-import { Observable, Subject } from "rxjs";
 import { SyncFinishedEvent } from "../../model/events/sync-finished";
 import { MatDialog } from "@angular/material";
 import { TreeItem, TreeFolderItem } from '../../model/ui/tree-item';
@@ -27,8 +26,6 @@ import { DynamicScriptLoaderService } from '../../services/dynamic-script-loader
 import * as Hammer from 'hammerjs';
 import { ScreenChangedEvent } from '../../model/events/screen-changed';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { remote } from 'electron';
-import * as fs from 'async-file';
 
 @Component({
   selector: "app-notes-list-with-editor",
@@ -40,6 +37,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   @ViewChild(NavigationTreeComponent) navigationTree: NavigationTreeComponent;
   @ViewChild(MatSidenav) sidenav: MatSidenav;
+  @ViewChild('fileInput') fileInput: ElementRef;
 
   INTERNAL_LINK_PREFIX = "local:";
 
@@ -282,22 +280,20 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     }
   }
 
-  async readToBase64(file) {
-    // read binary data
-    const bitmap = await fs.readFile(file);
-    // convert binary data to base64 encoded string
-    return new Buffer(bitmap).toString('base64');
+  onFileChange(event) {
+    const reader = new FileReader();
+    if(event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const imgTag = '<img src="' + reader.result + '" width="100%" height="100%">';
+        this.noteEditor.execCommand('mceInsertRawHTML', false, imgTag);
+      };
+    }
   }
 
   private addImage() {
-    remote.dialog.showOpenDialog({title: 'Select a folder', properties: ['openFile']}, (filePaths) => {
-      const filePath = filePaths[0];
-      this.readToBase64(filePath).then(imageData => {
-          const base64Image = 'data:image/jpeg;base64,' + imageData;
-          const imgTag = '<img src="' + base64Image + '" width="100%" height="100%">';
-          this.noteEditor.execCommand('mceInsertRawHTML', false, imgTag);
-      });
-    });
+    this.fileInput.nativeElement.click();
   }
 
   async readFolderToLinkSelectionMenu(folder: Folder, items: LinkTreeItem[]) {
@@ -493,7 +489,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       width: '250px',
       data: {
         title: 'Delete note',
-        text: 'Are you sure you want delete this note?'
+        text: 'Are you sure you want to delete this note?'
       }
     });
 

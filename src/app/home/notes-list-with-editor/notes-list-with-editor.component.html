@@ -31,6 +31,7 @@
     </div>
 
     <div fxFlex="80" fxLayout="column">
+      <input type="file" #fileInput  (change)="onFileChange($event)" style="display:none" />
       <div
         fxLayout="row"
         style="border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: #cfd8dc"
@@ -277,6 +278,7 @@
       </div>
 
       <div fxLayout="column" fxFlexFill *ngIf="!showMobileList">
+        <input type="file" #fileInput  (change)="onFileChange($event)" style="display:none" />
         <input
         #noteTitleInput="matInput"
         matInput
