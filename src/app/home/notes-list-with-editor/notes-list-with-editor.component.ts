@@ -286,7 +286,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       const file = event.target.files[0];
       reader.readAsDataURL(file);
       reader.onload = () => {
-        const imgTag = '<img src="' + reader.result + '" width="100%" height="100%">';
+        const imgTag = '<img src="' + reader.result + '" style="max-width:100%">';
         this.noteEditor.execCommand('mceInsertRawHTML', false, imgTag);
       };
     }
