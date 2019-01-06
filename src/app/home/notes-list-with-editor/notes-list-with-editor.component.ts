@@ -438,7 +438,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
 
-  onNewFolderMobile() {
+  onNewFolder() {
     this.hideFabItems();
     const dialogRef = this.dialog.open(AddFolderDialogComponent, {
       width: '250px'

@@ -36,7 +36,11 @@
         style="border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: #cfd8dc"
       >
         <button *ngIf="mode != 'fav'" mat-button (click)="onNewNote()">
-          <mat-icon>add</mat-icon>New note
+          <mat-icon>description</mat-icon>New note
+        </button>
+
+        <button *ngIf="mode == 'folder'" mat-button (click)="onNewFolder()">
+          <mat-icon>folder</mat-icon>New folder
         </button>
 
         <button mat-button (click)="doSync()" *ngIf="!authService.isOffline">
@@ -111,29 +115,29 @@
                 (focusout)="onNoteNameInputFocusOut()"
               />
 
-              <button mat-button (click)="onSaveNote()">
+              <button mat-icon-button (click)="onSaveNote()">
                 <mat-icon>save</mat-icon>
-              </button>
-
-              <button mat-button (click)="onDeleteNote()">
-                <mat-icon>delete</mat-icon>
               </button>
 
               <button
                 *ngIf="mode != 'fav'"
-                mat-button
+                mat-icon-button
                 (click)="onAddToFavorites()"
               >
                 <mat-icon>favorite</mat-icon>
               </button>
 
+              <button mat-icon-button (click)="onDeleteNote()">
+                <mat-icon>delete</mat-icon>
+              </button>
+
               <button
                 *ngIf="mode != 'fav'"
                 (click)="addImage()"
-              mat-button
+              mat-icon-button
               >
               <mat-icon>add_a_photo</mat-icon>
-              </button>              
+              </button>
             </div>
             <editor
               *ngIf="isEditorScriptLoaded"
@@ -179,10 +183,17 @@
       </button>
 
       <button
+        *ngIf="mobileShowBackButton && mode != 'fav'"
+        mat-icon-button
+        (click)="onAddToFavorites()"
+      >
+        <mat-icon>favorite</mat-icon>
+      </button>
+
+      <button
         *ngIf="mobileShowBackButton"
         type="button"
-        (click)="onDeleteNote
-        ()"
+        (click)="onDeleteNote()"
         mat-icon-button
       >
         <mat-icon>delete</mat-icon>
@@ -249,7 +260,7 @@
             mat-mini-fab
             class="fab-secondary"
             color="secondary"
-            (click)="onNewFolderMobile()"
+            (click)="onNewFolder()"
           >
             <i class="material-icons">folder</i>
           </button>
