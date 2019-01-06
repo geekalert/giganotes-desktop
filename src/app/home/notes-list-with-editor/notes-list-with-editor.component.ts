@@ -27,6 +27,8 @@ import { DynamicScriptLoaderService } from '../../services/dynamic-script-loader
 import * as Hammer from 'hammerjs';
 import { ScreenChangedEvent } from '../../model/events/screen-changed';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { remote } from 'electron';
+import * as fs from 'async-file';
 
 @Component({
   selector: "app-notes-list-with-editor",
@@ -207,10 +209,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     if (!this.isSyncOnInitDone) {
       this.isSyncOnInitDone = true;
       await this.doSync();
-
-      // We should reload menu items and list items after sync
-      await this.loadMenuItems();
-      await this.loadListItems();
     }
   }
 
@@ -219,6 +217,11 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       return;
     }
     await this.syncService.doSync();
+
+    // We should reload menu items and list items after sync
+    await this.loadMenuItems();
+    await this.loadListItems();
+
     this.eventBusService.sendMessage(new SyncFinishedEvent());
   }
 
@@ -277,6 +280,13 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         await this.loadNotes(this.folderId);
         break;
     }
+  }
+
+  private addImage() {
+    remote.dialog.showOpenDialog({title: 'Select a folder', properties: ['openFile']}, (filePaths) => {
+      const filePath = filePaths[0];
+      fs.readFile(filePath);
+    });
   }
 
   async readFolderToLinkSelectionMenu(folder: Folder, items: LinkTreeItem[]) {

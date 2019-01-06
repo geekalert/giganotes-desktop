@@ -196,6 +196,14 @@
       <mat-icon>folder</mat-icon>
       </button>
 
+      <button
+      *ngIf="mobileShowBackButton"
+      (click)="addImage()"
+      mat-icon-button
+      >
+      <mat-icon>add_a_photo</mat-icon>
+      </button>
+
     </mat-toolbar-row>
   </mat-toolbar>
 
