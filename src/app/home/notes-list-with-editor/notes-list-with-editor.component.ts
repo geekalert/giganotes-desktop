@@ -55,6 +55,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   isSyncOnInitDone = false;
 
   isEditorScriptLoaded = false;
+  isSelectedNoteLoaded = false;
   public searchFilter: string;
   notes = Array<Note>();
   selectedNote = new Note();
@@ -99,7 +100,45 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   @ViewChild("noteTitleInput") noteTitleInput: MatInput;
 
+  configureEditorSetup() {
+    const parent = this;
+    this.editorSetup = {
+      plugins:
+        "paste link anchor toc searchreplace table code codesample lists print textcolor",
+      menubar: false,
+      statusbar: false,
+      branding: false,
+      toolbar:
+        "print | insert | undo redo | formatselect | bold italic underline backcolor forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | table | code codesample",
+      link_list: async function(success) {
+        const list = await parent.prepareLinkSelectionMenu();
+        success(list);
+      },
+      codesample_languages: [
+        { text: "HTML/XML", value: "markup" },
+        { text: "JavaScript", value: "javascript" },
+        { text: "bash", value: "bash" },
+        { text: "JSON", value: "json" },
+        { text: "go", value: "go" },
+        { text: "CSS", value: "css" },
+        { text: "PHP", value: "php" },
+        { text: "Ruby", value: "ruby" },
+        { text: "Python", value: "python" },
+        { text: "Java", value: "java" },
+        { text: "C", value: "c" },
+        { text: "C#", value: "csharp" },
+        { text: "C++", value: "cpp" }
+      ],
+      paste_data_images: true,
+      setup: editor => {
+        this.noteEditor = editor;
+      }
+    };
+  }
+
   ngOnInit() {
+    this.configureEditorSetup();
+
     this.eventBusService.getMessages().subscribe(e => {
       if (e instanceof ScreenChangedEvent) {
         if (e.isMobile) {
@@ -142,44 +181,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         this.mobileShowBackButton = !this.showMobileList;
       }
 
-      this.loadData();
-
-      if (!this.screenService.isMobile || this.noteId != null) {
-        const parent = this;
-        this.editorSetup = {
-          plugins:
-            "paste link anchor toc searchreplace table code codesample lists print textcolor",
-          menubar: false,
-          statusbar: false,
-          branding: false,
-          toolbar:
-            "print | insert | undo redo | formatselect | bold italic underline backcolor forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | table | code codesample",
-          link_list: async function(success) {
-            const list = await parent.prepareLinkSelectionMenu();
-            success(list);
-          },
-          codesample_languages: [
-            { text: "HTML/XML", value: "markup" },
-            { text: "JavaScript", value: "javascript" },
-            { text: "bash", value: "bash" },
-            { text: "JSON", value: "json" },
-            { text: "go", value: "go" },
-            { text: "CSS", value: "css" },
-            { text: "PHP", value: "php" },
-            { text: "Ruby", value: "ruby" },
-            { text: "Python", value: "python" },
-            { text: "Java", value: "java" },
-            { text: "C", value: "c" },
-            { text: "C#", value: "csharp" },
-            { text: "C++", value: "cpp" }
-          ],
-          paste_data_images: true,
-          setup: editor => {
-            this.noteEditor = editor;
-          }
-        };
+      // If we are in note editing mode, flush note load status flag
+      if (this.noteId != null) {
+        this.isSelectedNoteLoaded = false;
       }
 
+      this.loadData();
     });
 
     if (this.screenService.isMobile) {
@@ -372,13 +379,16 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       if (filteredBySelectedId.length == 1) {
         const noteToSelect = filteredBySelectedId[0];
         this.selectedNoteInfo = noteToSelect;
-        this.selectedNote = await this.noteService.loadNoteById(
-          this.selectedNoteInfo.id
-        );
+        await this.loadSelectedNoteById(this.selectedNoteInfo.id);
       }
     } else {
       this.selectFirstNote();
     }
+  }
+
+  async loadSelectedNoteById(id: string) {
+    this.selectedNote = await this.noteService.loadNoteById(id);
+    this.isSelectedNoteLoaded = true;
   }
 
   async loadNotes(folderId: string) {
@@ -394,9 +404,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   async selectFirstNote() {
     if (this.notes.length > 0) {
       this.selectedNoteInfo = this.notes[0];
-      this.selectedNote = await this.noteService.loadNoteById(
-        this.selectedNoteInfo.id
-      );
+      await this.loadSelectedNoteById(this.selectedNoteInfo.id);
       this.folderOfSelectedNote = await this.noteService.loadFolderById(
         this.selectedNote.folderId
       );
@@ -469,8 +477,11 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
     this.selectedNote.updatedAt = new Date();
     this.noteService.updateNote(this.selectedNote);
-  }
 
+    const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
+    this.notes.splice(index, 1);
+    this.notes.splice(0, 0, this.selectedNoteInfo);
+  }
 
   async deleteSelectedNote() {
     const index = this.notes.findIndex(o => o === this.selectedNoteInfo);

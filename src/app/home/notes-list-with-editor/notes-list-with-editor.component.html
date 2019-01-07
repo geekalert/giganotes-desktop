@@ -288,7 +288,7 @@
         (focusout)="onNoteNameInputFocusOut()"
       />
       <editor
-        *ngIf="isEditorScriptLoaded"
+        *ngIf="isEditorScriptLoaded && isSelectedNoteLoaded"
         [init]="editorSetup"
         fxLayout="column"
         style="height:100%; width:100%"
