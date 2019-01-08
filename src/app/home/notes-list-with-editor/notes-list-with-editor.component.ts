@@ -548,8 +548,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       const hrefValue = element.attributes["href"].value;
       if (hrefValue.indexOf(this.INTERNAL_LINK_PREFIX) !== -1) {
         const id = hrefValue.substring(6);
-        const event = new NavigateEvent(id);
-        this.eventBusService.sendMessage(event);
+        this.onHandleNoteNavigation(id);
       }
     }
   }
@@ -596,7 +595,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       this.makeSelectedWithExpandingParents(folderItem);
     }
     this.zone.run(() => {
-      this.router.navigate(['list', { mode: 'folder', folderId: note.folderId, noteId: noteId }], { relativeTo: this.route })
+      this.router.navigate(['/home', { mode: 'folder', folderId: note.folderId, noteId: noteId }], { relativeTo: this.route })
     })
   }
 
