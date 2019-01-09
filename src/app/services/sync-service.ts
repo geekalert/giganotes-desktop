@@ -85,11 +85,12 @@ export class SyncService {
             await this.remoteNoteService.updateNote(updatedNote)
         }
 
-        const localNotesList = await this.localNoteService.getAllNotes(false);
+        const localNotesInfoList = await this.localNoteService.getAllNotes(false);
 
-        for (const localNote of localNotesList) {
-            if (!notesRemoteInfoMap.has(localNote.id)) {
-                uploadNotesList.push(localNote)
+        for (const localNoteInfo of localNotesInfoList) {
+            if (!notesRemoteInfoMap.has(localNoteInfo.id)) {
+                const localNote = await this.localNoteService.loadNoteById(localNoteInfo.id);
+                uploadNotesList.push(localNote);
             }
         }
 
