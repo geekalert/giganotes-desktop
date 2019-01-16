@@ -20,9 +20,10 @@
     "!tslint.json"
   ],
   "win": {
+    "asarUnpack": "**\\*.node",
     "icon": "dist",
     "target": [
-      "nsis"
+      "nsis", "appx"
     ]
   },
   "mac": {
