@@ -706,7 +706,16 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       this.treeItemsMap.set(curFolder.id, curTreeItem)
     }
 
-    return Promise.resolve(root)
+    await this.sortSubitemsByName(root);
+
+    return Promise.resolve(root);
+  }
+
+  async sortSubitemsByName(item: TreeItem) {
+       item.subItems = item.subItems.sort((a, b) => a.name !== b.name ? a.name < b.name ? -1 : 1 : 0);
+       for (const subItem of item.subItems) {
+         await this.sortSubitemsByName(subItem);
+       }
   }
 
   async loadMenuItems() {
