@@ -54,7 +54,8 @@
     "roboto-fontface": "^0.10.0",
     "rxjs": "6.3.2",
     "sqlite": "3.0.0",
-    "uuid": "3.3.2"
+    "uuid": "3.3.2",
+    "node-abi":"2.5.1"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^2.4.1",
