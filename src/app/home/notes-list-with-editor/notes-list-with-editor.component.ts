@@ -618,7 +618,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     await this.authService.logout();
 
     if (this.authService.loginType === 'social') {
-      await this.socialAuthService.signOut();
+      this.socialAuthService.signOut();
     }
 
     this.router.navigate(['/login'])
