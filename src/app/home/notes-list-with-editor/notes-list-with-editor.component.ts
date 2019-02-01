@@ -154,6 +154,9 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
     this.route.params.subscribe(params => {
 
+      // Clear search filter when opening a route
+      this.searchFilter = '';
+
       this.prevMode = this.mode;
       this.prevFolderId = this.folderId;
       this.prevNoteId = this.noteId;
