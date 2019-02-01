@@ -32,7 +32,7 @@
 
                 <div *ngIf="signInErrorMessage.length > 0" style="color: red;">{{ signInErrorMessage }} </div>
 
-                <button color="primary" mat-raised-button style="margin-top: 20px; width: 100%" type="submit"> Log In
+                <button color="primary" mat-raised-button style="margin-top: 20px; width: 100%" type="submit" [disabled]="isLoading"> Log In
                 </button>
 
                 <div fxLayout="row" style="margin-top: 20px">
@@ -79,7 +79,7 @@
 
                 <div *ngIf="registerErrorMessage.length > 0" style="color: red;">{{ registerErrorMessage }} </div>
 
-                <button color="primary" mat-raised-button style="margin-top: 20px; width: 100%" type="submit"> Register
+                <button color="primary" mat-raised-button style="margin-top: 20px; width: 100%" type="submit" [disabled]="isLoading"> Register
                 </button>
               </form>
             </div>

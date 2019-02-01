@@ -19,10 +19,17 @@
     "!tsconfig.json",
     "!tslint.json"
   ],
+  "appx": {
+    "applicationId": "giganotes",
+    "identityName": "51772ThetaPad.51188E23747D4",
+    "publisher": "CN=4C2CC38F-D0D7-466D-9C14-560626A1F117",
+    "publisherDisplayName": "FourthByte"
+  },
   "win": {
+    "asarUnpack": "**\\*.node",
     "icon": "dist",
     "target": [
-      "nsis"
+      "nsis", "appx"
     ]
   },
   "mac": {

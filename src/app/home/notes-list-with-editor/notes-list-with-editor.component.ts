@@ -14,7 +14,6 @@ import { SyncService } from '../../services/sync-service';
 import { EventBusService } from "../../services/event-bus-service";
 import { ScreenService } from "../../services/screen.service";
 import { NavigateEvent } from "../../model/events/navigate-event";
-import { Observable, Subject } from "rxjs";
 import { SyncFinishedEvent } from "../../model/events/sync-finished";
 import { MatDialog } from "@angular/material";
 import { TreeItem, TreeFolderItem } from '../../model/ui/tree-item';
@@ -38,6 +37,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   @ViewChild(NavigationTreeComponent) navigationTree: NavigationTreeComponent;
   @ViewChild(MatSidenav) sidenav: MatSidenav;
+  @ViewChild('fileInput') fileInput: ElementRef;
 
   INTERNAL_LINK_PREFIX = "local:";
 
@@ -55,6 +55,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   isSyncOnInitDone = false;
 
   isEditorScriptLoaded = false;
+  isSelectedNoteLoaded = false;
   public searchFilter: string;
   notes = Array<Note>();
   selectedNote = new Note();
@@ -99,7 +100,45 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   @ViewChild("noteTitleInput") noteTitleInput: MatInput;
 
+  configureEditorSetup() {
+    const parent = this;
+    this.editorSetup = {
+      plugins:
+        "paste link anchor toc searchreplace table code codesample lists print textcolor",
+      menubar: false,
+      statusbar: false,
+      branding: false,
+      toolbar:
+        "print | insert | undo redo | formatselect | bold italic underline backcolor forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | table | code codesample",
+      link_list: async function(success) {
+        const list = await parent.prepareLinkSelectionMenu();
+        success(list);
+      },
+      codesample_languages: [
+        { text: "HTML/XML", value: "markup" },
+        { text: "JavaScript", value: "javascript" },
+        { text: "bash", value: "bash" },
+        { text: "JSON", value: "json" },
+        { text: "go", value: "go" },
+        { text: "CSS", value: "css" },
+        { text: "PHP", value: "php" },
+        { text: "Ruby", value: "ruby" },
+        { text: "Python", value: "python" },
+        { text: "Java", value: "java" },
+        { text: "C", value: "c" },
+        { text: "C#", value: "csharp" },
+        { text: "C++", value: "cpp" }
+      ],
+      paste_data_images: true,
+      setup: editor => {
+        this.noteEditor = editor;
+      }
+    };
+  }
+
   ngOnInit() {
+    this.configureEditorSetup();
+
     this.eventBusService.getMessages().subscribe(e => {
       if (e instanceof ScreenChangedEvent) {
         if (e.isMobile) {
@@ -114,6 +153,9 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     });
 
     this.route.params.subscribe(params => {
+
+      // Clear search filter when opening a route
+      this.searchFilter = '';
 
       this.prevMode = this.mode;
       this.prevFolderId = this.folderId;
@@ -142,44 +184,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         this.mobileShowBackButton = !this.showMobileList;
       }
 
-      this.loadData();
-
-      if (!this.screenService.isMobile || this.noteId != null) {
-        const parent = this;
-        this.editorSetup = {
-          plugins:
-            "paste link anchor toc searchreplace table code codesample lists print textcolor",
-          menubar: false,
-          statusbar: false,
-          branding: false,
-          toolbar:
-            "print | insert | undo redo | formatselect | bold italic underline backcolor forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | table | code codesample",
-          link_list: async function(success) {
-            const list = await parent.prepareLinkSelectionMenu();
-            success(list);
-          },
-          codesample_languages: [
-            { text: "HTML/XML", value: "markup" },
-            { text: "JavaScript", value: "javascript" },
-            { text: "bash", value: "bash" },
-            { text: "JSON", value: "json" },
-            { text: "go", value: "go" },
-            { text: "CSS", value: "css" },
-            { text: "PHP", value: "php" },
-            { text: "Ruby", value: "ruby" },
-            { text: "Python", value: "python" },
-            { text: "Java", value: "java" },
-            { text: "C", value: "c" },
-            { text: "C#", value: "csharp" },
-            { text: "C++", value: "cpp" }
-          ],
-          paste_data_images: true,
-          setup: editor => {
-            this.noteEditor = editor;
-          }
-        };
+      // If we are in note editing mode, flush note load status flag
+      if (this.noteId != null) {
+        this.isSelectedNoteLoaded = false;
       }
 
+      this.loadData();
     });
 
     if (this.screenService.isMobile) {
@@ -207,10 +217,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     if (!this.isSyncOnInitDone) {
       this.isSyncOnInitDone = true;
       await this.doSync();
-
-      // We should reload menu items and list items after sync
-      await this.loadMenuItems();
-      await this.loadListItems();
     }
   }
 
@@ -219,6 +225,11 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       return;
     }
     await this.syncService.doSync();
+
+    // We should reload menu items and list items after sync
+    await this.loadMenuItems();
+    await this.loadListItems();
+
     this.eventBusService.sendMessage(new SyncFinishedEvent());
   }
 
@@ -277,6 +288,22 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         await this.loadNotes(this.folderId);
         break;
     }
+  }
+
+  onFileChange(event) {
+    const reader = new FileReader();
+    if(event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const imgTag = '<img src="' + reader.result + '" style="max-width:100%">';
+        this.noteEditor.execCommand('mceInsertRawHTML', false, imgTag);
+      };
+    }
+  }
+
+  private addImage() {
+    this.fileInput.nativeElement.click();
   }
 
   async readFolderToLinkSelectionMenu(folder: Folder, items: LinkTreeItem[]) {
@@ -355,13 +382,16 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       if (filteredBySelectedId.length == 1) {
         const noteToSelect = filteredBySelectedId[0];
         this.selectedNoteInfo = noteToSelect;
-        this.selectedNote = await this.noteService.loadNoteById(
-          this.selectedNoteInfo.id
-        );
+        await this.loadSelectedNoteById(this.selectedNoteInfo.id);
       }
     } else {
       this.selectFirstNote();
     }
+  }
+
+  async loadSelectedNoteById(id: string) {
+    this.selectedNote = await this.noteService.loadNoteById(id);
+    this.isSelectedNoteLoaded = true;
   }
 
   async loadNotes(folderId: string) {
@@ -377,9 +407,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   async selectFirstNote() {
     if (this.notes.length > 0) {
       this.selectedNoteInfo = this.notes[0];
-      this.selectedNote = await this.noteService.loadNoteById(
-        this.selectedNoteInfo.id
-      );
+      await this.loadSelectedNoteById(this.selectedNoteInfo.id);
       this.folderOfSelectedNote = await this.noteService.loadFolderById(
         this.selectedNote.folderId
       );
@@ -417,7 +445,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
 
-  onNewFolderMobile() {
+  onNewFolder() {
     this.hideFabItems();
     const dialogRef = this.dialog.open(AddFolderDialogComponent, {
       width: '250px'
@@ -452,8 +480,11 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
     this.selectedNote.updatedAt = new Date();
     this.noteService.updateNote(this.selectedNote);
-  }
 
+    const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
+    this.notes.splice(index, 1);
+    this.notes.splice(0, 0, this.selectedNoteInfo);
+  }
 
   async deleteSelectedNote() {
     const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
@@ -472,7 +503,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       width: '250px',
       data: {
         title: 'Delete note',
-        text: 'Are you sure you want delete this note?'
+        text: 'Are you sure you want to delete this note?'
       }
     });
 
@@ -520,8 +551,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       const hrefValue = element.attributes["href"].value;
       if (hrefValue.indexOf(this.INTERNAL_LINK_PREFIX) !== -1) {
         const id = hrefValue.substring(6);
-        const event = new NavigateEvent(id);
-        this.eventBusService.sendMessage(event);
+        this.onHandleNoteNavigation(id);
       }
     }
   }
@@ -568,7 +598,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       this.makeSelectedWithExpandingParents(folderItem);
     }
     this.zone.run(() => {
-      this.router.navigate(['list', { mode: 'folder', folderId: note.folderId, noteId: noteId }], { relativeTo: this.route })
+      this.router.navigate(['/home', { mode: 'folder', folderId: note.folderId, noteId: noteId }], { relativeTo: this.route })
     })
   }
 
@@ -591,7 +621,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     await this.authService.logout();
 
     if (this.authService.loginType === 'social') {
-      await this.socialAuthService.signOut();
+      this.socialAuthService.signOut();
     }
 
     this.router.navigate(['/login'])
@@ -679,7 +709,16 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       this.treeItemsMap.set(curFolder.id, curTreeItem)
     }
 
-    return Promise.resolve(root)
+    await this.sortSubitemsByName(root);
+
+    return Promise.resolve(root);
+  }
+
+  async sortSubitemsByName(item: TreeItem) {
+       item.subItems = item.subItems.sort((a, b) => a.name !== b.name ? a.name < b.name ? -1 : 1 : 0);
+       for (const subItem of item.subItems) {
+         await this.sortSubitemsByName(subItem);
+       }
   }
 
   async loadMenuItems() {

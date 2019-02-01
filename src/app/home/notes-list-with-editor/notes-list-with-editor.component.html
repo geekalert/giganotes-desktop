@@ -31,12 +31,17 @@
     </div>
 
     <div fxFlex="80" fxLayout="column">
+      <input type="file" #fileInput  (change)="onFileChange($event)" style="display:none" />
       <div
         fxLayout="row"
         style="border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: #cfd8dc"
       >
         <button *ngIf="mode != 'fav'" mat-button (click)="onNewNote()">
-          <mat-icon>add</mat-icon>New note
+          <mat-icon>description</mat-icon>New note
+        </button>
+
+        <button *ngIf="mode == 'folder'" mat-button (click)="onNewFolder()">
+          <mat-icon>folder</mat-icon>New folder
         </button>
 
         <button mat-button (click)="doSync()" *ngIf="!authService.isOffline">
@@ -111,20 +116,28 @@
                 (focusout)="onNoteNameInputFocusOut()"
               />
 
-              <button mat-button (click)="onSaveNote()">
+              <button mat-icon-button (click)="onSaveNote()">
                 <mat-icon>save</mat-icon>
               </button>
 
-              <button mat-button (click)="onDeleteNote()">
+              <button
+                *ngIf="mode != 'fav'"
+                mat-icon-button
+                (click)="onAddToFavorites()"
+              >
+                <mat-icon>favorite</mat-icon>
+              </button>
+
+              <button mat-icon-button (click)="onDeleteNote()">
                 <mat-icon>delete</mat-icon>
               </button>
 
               <button
                 *ngIf="mode != 'fav'"
-                mat-button
-                (click)="onAddToFavorites()"
+                (click)="addImage()"
+              mat-icon-button
               >
-                <mat-icon>favorite</mat-icon>
+              <mat-icon>add_a_photo</mat-icon>
               </button>
             </div>
             <editor
@@ -171,6 +184,14 @@
       </button>
 
       <button
+        *ngIf="mobileShowBackButton && mode != 'fav'"
+        mat-icon-button
+        (click)="onAddToFavorites()"
+      >
+        <mat-icon>favorite</mat-icon>
+      </button>
+
+      <button
         *ngIf="mobileShowBackButton"
         type="button"
         (click)="onDeleteNote()"
@@ -194,6 +215,14 @@
       mat-icon-button
       >
       <mat-icon>folder</mat-icon>
+      </button>
+
+      <button
+      *ngIf="mobileShowBackButton"
+      (click)="addImage()"
+      mat-icon-button
+      >
+      <mat-icon>add_a_photo</mat-icon>
       </button>
 
     </mat-toolbar-row>
@@ -232,7 +261,7 @@
             mat-mini-fab
             class="fab-secondary"
             color="secondary"
-            (click)="onNewFolderMobile()"
+            (click)="onNewFolder()"
           >
             <i class="material-icons">folder</i>
           </button>
@@ -249,6 +278,7 @@
       </div>
 
       <div fxLayout="column" fxFlexFill *ngIf="!showMobileList">
+        <input type="file" #fileInput  (change)="onFileChange($event)" style="display:none" />
         <input
         #noteTitleInput="matInput"
         matInput
@@ -258,7 +288,7 @@
         (focusout)="onNoteNameInputFocusOut()"
       />
       <editor
-        *ngIf="isEditorScriptLoaded"
+        *ngIf="isEditorScriptLoaded && isSelectedNoteLoaded"
         [init]="editorSetup"
         fxLayout="column"
         style="height:100%; width:100%"

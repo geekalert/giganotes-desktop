@@ -1,6 +1,6 @@
 {
   "name": "giganotes",
-  "version": "1.1.4",
+  "version": "1.1.6",
   "description": "Note taking application",
   "homepage": "https://giganotes.com",
   "author": {
@@ -49,10 +49,13 @@
     "@tinymce/tinymce-angular": "2.0.1",
     "angular-draggable-droppable": "^4.0.2",
     "async-file": "2.0.2",
-    "electron-oauth-helper": "2.0.3",
+    "electron-oauth-helper": "3.0.0",
+    "material-design-icons": "^3.0.1",
+    "roboto-fontface": "^0.10.0",
     "rxjs": "6.3.2",
     "sqlite": "3.0.0",
-    "uuid": "3.3.2"
+    "uuid": "3.3.2",
+    "node-abi":"2.5.1"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^2.4.1",
@@ -70,8 +73,8 @@
     "@types/node": "8.9.4",
     "codelyzer": "4.2.1",
     "core-js": "2.5.6",
-    "electron": "2.0.9",
-    "electron-builder": "20.28.1",
+    "electron": "4.0.1",
+    "electron-builder": "20.38.5",
     "electron-rebuild": "1.8.2",
     "electron-reload": "1.2.2",
     "hammerjs": "^2.0.8",
