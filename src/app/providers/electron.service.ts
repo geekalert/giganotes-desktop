@@ -8,12 +8,18 @@ import { remote } from 'electron';
 export class ElectronService {
 
   remote: typeof remote;
+  addon: any;
 
   constructor() {
       this.remote = window.require('electron').remote;
+      this.addon = window.require('gigacore');
   }
 
   getUserDataPath() : string {
     return this.remote.app.getPath('userData')
+  }
+
+  public hello() : string {
+    return this.addon.hello();
   }
 }

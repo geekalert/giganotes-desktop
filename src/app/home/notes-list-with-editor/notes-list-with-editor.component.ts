@@ -26,6 +26,7 @@ import { DynamicScriptLoaderService } from '../../services/dynamic-script-loader
 import * as Hammer from 'hammerjs';
 import { ScreenChangedEvent } from '../../model/events/screen-changed';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { ElectronService } from '../../providers/electron.service';
 
 @Component({
   selector: "app-notes-list-with-editor",
@@ -79,6 +80,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   showFabButtons = false;
   fabTogglerState = 'inactive';
+
+  nativeHello = '';
 
   showFabItems() {
     this.fabTogglerState = 'active';
@@ -255,9 +258,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     public screenService: ScreenService,
     private socialAuthService: SocialAuthService,
     private dynamicScriptLoaderService: DynamicScriptLoaderService,
+    private electronService: ElectronService,
     private router: Router,
     private dialog: MatDialog
   ) {
+
+    this.nativeHello = electronService.hello();
 
     if (this.screenService.isMobile) {
       // To get swipeable sidebar
