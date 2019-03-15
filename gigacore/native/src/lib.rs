@@ -1,14 +1,12 @@
 #[macro_use]
 extern crate neon;
 
-use neon::vm::{Call, JsResult};
-use neon::js::JsString;
+use neon::prelude::*;
 
-fn hello(call: Call) -> JsResult<JsString> {
-    let scope = call.scope;
-    Ok(JsString::new(scope, "Hello from Neon!").unwrap())
+fn hello_world(mut cx: FunctionContext) -> JsResult<JsString> {
+    Ok(cx.string("hello world!"))
 }
 
-register_module!(m, {
-    m.export("hello", hello)
+register_module!(mut m, {
+    m.export_function("hello", hello_world)
 });
