@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth-service';
 import { LoggerService } from '../../services/logger-service';
 import { SocialAuthService } from '../../services/social-auth/social-auth-service';
 import { GoogleLoginProvider } from '../../services/social-auth/google-login-provider';
-
+import { ElectronService } from '../../providers/electron.service';
 import { Folder } from '../../model/folder';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -30,10 +30,13 @@ export class LoginComponent implements OnInit {
         private authService: AuthService,
         private noteService: LocalNoteService,
         private socialAuthService: SocialAuthService,
+        private electronService: ElectronService,
         private loggerService: LoggerService) {
 
         const googleIconUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/google.svg');
         iconRegistry.addSvgIcon('google-colored', googleIconUrl);
+
+        console.log(this.electronService.fibo());
     }
 
     ngOnInit() {

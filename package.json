@@ -35,6 +35,7 @@
     "rebuild-electron-deps": "electron-rebuild -f -w sqlite3"
   },
   "dependencies": {
+    "nativeaddon": "file:./nativeaddon",
     "@angular/animations": "6.1.7",
     "@angular/cdk": "^6.4.7",
     "@angular/common": "6.1.7",
@@ -49,13 +50,15 @@
     "@tinymce/tinymce-angular": "2.0.1",
     "angular-draggable-droppable": "^4.0.2",
     "async-file": "2.0.2",
+    "boost-lib": "^0.11.3",
     "electron-oauth-helper": "3.0.0",
     "material-design-icons": "^3.0.1",
+    "nan": "^2.13.0",
+    "node-abi": "2.5.1",
     "roboto-fontface": "^0.10.0",
     "rxjs": "6.3.2",
     "sqlite": "3.0.0",
-    "uuid": "3.3.2",
-    "node-abi":"2.5.1"
+    "uuid": "3.3.2"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^2.4.1",
@@ -71,6 +74,7 @@
     "@types/jasmine": "2.8.7",
     "@types/jasminewd2": "2.0.3",
     "@types/node": "8.9.4",
+    "bindings": "^1.5.0",
     "codelyzer": "4.2.1",
     "core-js": "2.5.6",
     "electron": "4.0.1",
@@ -93,7 +97,7 @@
     "typescript": "2.9.2",
     "wait-on": "2.1.0",
     "webdriver-manager": "12.0.6",
-    "zone.js": "0.8.26",
-    "webpack": "4.24.0"
+    "webpack": "4.24.0",
+    "zone.js": "0.8.26"
   }
 }
