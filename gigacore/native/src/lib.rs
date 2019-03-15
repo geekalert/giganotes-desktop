@@ -1,17 +1,14 @@
 #[macro_use]
 extern crate neon;
 
-use neon::prelude::*;
+use neon::vm::{Call, JsResult};
+use neon::js::JsString;
 
-fn hello(mut cx: FunctionContext) -> JsResult<JsString> {
-    Ok(cx.string("threadcount"))
+fn hello(call: Call) -> JsResult<JsString> {
+    let scope = call.scope;
+    Ok(JsString::new(scope, "Hello from Neon!").unwrap())
 }
 
-#[no_mangle]
-pub extern fn __cxa_pure_virtual() {
-    loop{};
-}
-
-register_module!(mut cx, {
-    cx.export_function("hello", hello)
+register_module!(m, {
+    m.export("hello", hello)
 });
