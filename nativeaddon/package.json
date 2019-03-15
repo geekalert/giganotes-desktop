@@ -11,7 +11,7 @@
     "nan": "^2.1.0"
   },
   "scripts": {
-    "install": "cmake-js compile",
+    "install": "",
     "test": "mocha tests",
     "test-es5": "mocha tests --old"
   },
@@ -20,7 +20,7 @@
   },
   "cmake-js": {
     "runtime": "electron",
-    "runtimeVersion": "4.0.1",
+    "runtimeVersion": "2.0.18",
     "arch": "x64"
   }
 }
