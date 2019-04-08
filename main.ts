@@ -1,6 +1,8 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, protocol } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import {PassThrough} from 'stream';
+
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -48,12 +50,40 @@ function createWindow() {
 
 }
 
+function createStream (text) {
+  const rv = new PassThrough();
+  rv.push(text);
+  rv.push(null);
+  return rv;
+}
+
+function handleStreamProtocol(request, callback) {
+    callback({
+        statusCode: 200,
+        headers: {
+            'content-type': 'text/html'
+        },
+        data: createStream('<h1>This is a perfectly cromulent response.</h1>')
+    });
+}
+
 try {
 
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', createWindow);
+  app.on('ready', () => {
+
+    protocol.registerStreamProtocol('fake', handleStreamProtocol, (err) => {
+        if (err) {
+            console.error('failed to register protocol handler for HTTP');
+            return;
+        }
+
+        createWindow();
+    });
+
+  });
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
