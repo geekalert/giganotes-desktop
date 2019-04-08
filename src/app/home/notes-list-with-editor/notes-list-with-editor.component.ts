@@ -346,6 +346,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       const folder = folders[i];
       const parentFolder = foldersMap.get(folder.parentId);
 
+      // Gracefully handle the exceptional situation when the folder refer to non-existing parent.
+      // It should not happen in most cases. Let's just skip it
+      if (parentFolder == null) {
+        continue;
+      }
+
       if (parentFolder.children == null) {
         parentFolder.children = Array<Folder>();
       }
@@ -355,6 +361,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
     for (const note of notes) {
       const parentFolder = foldersMap.get(note.folderId);
+
+      // Gracefully handle the exceptional situation when the folder refer to non-existing parent.
+      // It should not happen in most cases. Let's just skip it
+      if (parentFolder == null) {
+        continue;
+      }
 
       if (parentFolder.notes == null) {
         parentFolder.notes = Array<Note>();

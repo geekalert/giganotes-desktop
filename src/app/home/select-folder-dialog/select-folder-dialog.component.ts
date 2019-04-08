@@ -45,6 +45,12 @@ export class SelectFolderDialogComponent implements OnInit {
       const curFolder = sortedFoldersList[i]
       const parentItem = curFolder.parentId == null ? root : this.treeItemsMap.get(curFolder.parentId)
 
+      // Gracefully handle the exceptional situation when the folder refer to non-existing parent.
+      // It should not happen in most cases. Let's just skip it
+      if (parentItem == null) {
+        continue;
+      }
+
       const curTreeItem = new TreeFolderItem();
 
       curTreeItem.folderId = curFolder.id;
