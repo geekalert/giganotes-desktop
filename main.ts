@@ -62,7 +62,8 @@ try {
   const dbPath = app.getPath('userData') + path.sep + 'local.db';
   console.log('Opening' + dbPath + ' in main process');
   let db = null;
-  sqlite.open(dbPath).then((dbVal) => {
+  // Open Sqlite in read-only mode
+  sqlite.open(dbPath, { mode : 0x00000001 }).then((dbVal) => {
       console.log('Opened db');
     db = dbVal;
   });
