@@ -26,6 +26,7 @@ import { DynamicScriptLoaderService } from '../../services/dynamic-script-loader
 import * as Hammer from 'hammerjs';
 import { ScreenChangedEvent } from '../../model/events/screen-changed';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { from, Subscription } from 'rxjs';
 
 @Component({
   selector: "app-notes-list-with-editor",
@@ -67,6 +68,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   newNoteMobileCreationStarted = false;
   showMobileList = true;
   mobileShowBackButton = false;
+
+  searchSubscription: Subscription;
 
   //Parameters
   mode: string;
@@ -539,22 +542,28 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     this.searchNotes();
   }
 
-  async searchNotes() {
-    if (this.mode == "all") {
-      this.notes = await this.noteService.searchNotes(this.searchFilter, null);
-    } else if (this.mode == "folder") {
-      this.notes = await this.noteService.searchNotes(
-        this.searchFilter,
-        this.currentFolder.id
-      );
+  searchNotes() {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
     }
 
-    if (this.notes.length > 0) {
-      await this.selectFirstNote();
+    let observable;
+
+    if (this.mode === 'all') {
+      observable = from(this.noteService.searchNotes(this.searchFilter, null));
     } else {
-      this.selectedNote.title = "";
-      this.selectedNote.text = "";
+      observable = from(this.noteService.searchNotes(this.searchFilter, this.currentFolder.id));
     }
+
+    this.searchSubscription = from(observable).subscribe((notes : Array<Note>)  => {
+      this.notes = notes;
+      if (this.notes.length > 0) {
+        this.selectFirstNote();
+      } else {
+        this.selectedNote.title = '';
+        this.selectedNote.text = '';
+      }
+    });
   }
 
   async handleEditorClick(event: any) {
