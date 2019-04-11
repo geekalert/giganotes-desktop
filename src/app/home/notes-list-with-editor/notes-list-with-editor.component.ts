@@ -83,8 +83,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   showFabButtons = false;
   fabTogglerState = 'inactive';
 
-  editorReadOnly = true;
-
   showFabItems() {
     this.fabTogglerState = 'active';
     this.showFabButtons = true;
@@ -135,7 +133,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         { text: "C++", value: "cpp" }
       ],
       paste_data_images: true,
-      readonly: 1,
+      readonly: true,
       setup: editor => {
         this.noteEditor = editor;
       }
@@ -192,8 +190,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
       // If we are in note editing mode, flush note load status flag
       if (this.noteId != null) {
-        this.editorReadOnly = true;
-        this.noteEditor.setMode('readonly');
         this.isSelectedNoteLoaded = false;
       }
 
@@ -206,7 +202,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   onEdit() {
-    this.editorReadOnly = false;
     this.noteEditor.setMode('design');
   }
 
@@ -402,6 +397,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async loadSpecificOrFirstNote() {
+    this.noteEditor.setMode('readonly');
+
     if (this.noteId != null) {
       const filteredBySelectedId = this.notes.filter(n => n.id == this.noteId);
       if (filteredBySelectedId.length == 1) {
