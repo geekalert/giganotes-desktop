@@ -451,6 +451,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async onNewNote() {
+    this.onEdit(); // Turn on design mode
     this.selectedNote = await this.createNote();
     this.folderOfSelectedNote = await this.noteService.loadFolderById(
       this.selectedNote.folderId
@@ -462,6 +463,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   async onNewNoteMobile() {
     this.hideFabItems();
+
+    this.onEdit(); // Turn on design mode
 
     this.selectedNote = await this.createNote();
     this.notes.splice(0, 0, this.selectedNote);
