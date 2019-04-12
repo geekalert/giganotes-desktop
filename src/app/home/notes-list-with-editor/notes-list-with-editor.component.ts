@@ -83,6 +83,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   showFabButtons = false;
   fabTogglerState = 'inactive';
 
+  isReadOnly = true;
+
   showFabItems() {
     this.fabTogglerState = 'active';
     this.showFabButtons = true;
@@ -134,6 +136,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       ],
       paste_data_images: true,
       readonly: true,
+      height: '100%',
       setup: editor => {
         this.noteEditor = editor;
       }
@@ -202,6 +205,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   onEdit() {
+    this.isReadOnly = false;
     this.noteEditor.setMode('design');
   }
 
@@ -397,6 +401,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async loadSpecificOrFirstNote() {
+    this.isReadOnly = true;
     this.noteEditor.setMode('readonly');
 
     if (this.noteId != null) {
@@ -573,7 +578,13 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     });
   }
 
+  async handleEditorClick2(event: any) {
+    console.log('Hey')
+  }
   async handleEditorClick(event: any) {
+    if (!this.isReadOnly) {
+      return;
+    }
     const element = event.event.srcElement;
     if (element.tagName === "A") {
       const hrefValue = element.attributes["href"].value;
