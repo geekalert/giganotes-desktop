@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
         const googleIconUrl = sanitizer.bypassSecurityTrustResourceUrl('./assets/google.svg');
         iconRegistry.addSvgIcon('google-colored', googleIconUrl);
 
-        console.log(this.electronService.fibo());
+        alert(this.electronService.fibo());
     }
 
     ngOnInit() {

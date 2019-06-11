@@ -1,21 +1,16 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(Boost_USE_STATIC_LIBS   ON)
+#set(Boost_USE_STATIC_LIBS   ON)
+#set(Boost_USE_MULTITHREADED ON)
 
 # Name of the project (will be the name of the plugin)
 project (addon)
 
 # Boost dependency
 
-# Include BoostLib module
-file(GLOB_RECURSE boostlib_cmake_path "${CMAKE_CURRENT_SOURCE_DIR}/node_modules" "BoostLib.cmake")
-list(GET boostlib_cmake_path 0 boostlib_cmake_path)
-get_filename_component(boostlib_cmake_path "${boostlib_cmake_path}" DIRECTORY)
-SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${boostlib_cmake_path}")
-include(BoostLib)
+find_package(Boost COMPONENTS system REQUIRED)
 
 # Locate/Download Boost (semver)
-require_boost_libs(">= 1.58.0" "coroutine")
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Essential include files to build a node addon,

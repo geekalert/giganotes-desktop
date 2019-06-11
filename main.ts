@@ -1,12 +1,15 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as addon from 'nativeaddon';
 
 let win, serve;
 const args = process.argv.slice(1);
 serve = args.some(val => val === '--serve');
 
 function createWindow() {
+
+  console.log(addon.fibo());
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
