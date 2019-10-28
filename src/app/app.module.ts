@@ -11,13 +11,11 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { AppRoutingModule } from './app-routing.module';
 
-import { APP_INITIALIZER } from '@angular/core';
+import { Storage } from './services/storage';
 
-import { DbService } from './services/db-service';
 import { LoggerService } from './services/logger-service';
 import { ElectronService } from './providers/electron.service';
 import { LocalNoteService } from './services/local-note-service';
-import { RemoteNoteService } from './services/remote-note-service';
 import { SyncService } from './services/sync-service';
 
 import { AuthGuard } from './guards/auth-guard';
@@ -25,7 +23,6 @@ import { AuthService } from './services/auth-service';
 import { AuthServiceConfig, SocialAuthService } from './services/social-auth/social-auth-service';
 import { GoogleLoginProvider } from './services/social-auth/google-login-provider';
 import { HttpClient } from '@angular/common/http';
-import { Storage } from './services/storage';
 
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 
@@ -104,26 +101,18 @@ import { DynamicScriptLoaderService } from './services/dynamic-script-loader.ser
     AppRoutingModule,
     LayoutModule
   ],
-  providers: [DbService,
+  providers: [
     LoggerService,
     LocalNoteService,
-    RemoteNoteService,
     SyncService,
     ElectronService,
     AuthGuard,
     AuthService,
     EventBusService,
     DataService,
-    Storage,
     SocialAuthService,
     ScreenService,
     DynamicScriptLoaderService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (dbService: DbService) => function () { return dbService.openDatabase() },
-      deps: [DbService],
-      multi: true
-    },
     {
       provide: AuthServiceConfig,
       useFactory: provideSocialConfig,
