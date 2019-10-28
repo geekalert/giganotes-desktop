@@ -1,10 +1,34 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { Manager } from 'giganotes-core';
+
+const DB_FILE_NAME = 'local.db';
 
 let win, serve;
 const args = process.argv.slice(1);
 serve = args.some(val => val === '--serve');
+
+function getUserDataPath(): string {
+  return app.getPath('userData');
+}
+
+function getDbPath(): string {
+  return getUserDataPath() + path.sep + DB_FILE_NAME;
+}
+
+async function initCore() {
+    console.log('Init giganotes core');
+    const manager = new Manager();
+    const dbPath = getDbPath();
+    console.log(dbPath);
+    await manager.init(dbPath);
+}
+
+async function startApp() {
+    await initCore();
+    createWindow();
+}
 
 function createWindow() {
 
@@ -53,7 +77,7 @@ try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', createWindow);
+  app.on('ready', startApp);
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
@@ -68,7 +92,7 @@ try {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (win === null) {
-      createWindow();
+      startApp();
     }
   });
 
