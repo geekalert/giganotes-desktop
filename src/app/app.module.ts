@@ -102,6 +102,7 @@ import { DynamicScriptLoaderService } from './services/dynamic-script-loader.ser
     LayoutModule
   ],
   providers: [
+    Storage,
     LoggerService,
     LocalNoteService,
     SyncService,
