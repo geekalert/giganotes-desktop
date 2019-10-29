@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ipcRenderer } from 'electron';
+
 import { Http } from '@angular/http';
 import { LocalNoteService } from './local-note-service';
 import { AuthService } from './auth-service';
@@ -25,6 +27,18 @@ export class SyncService {
         return this._isSyncing;
     }
 
+    async callSync(userId: number) {
+        return new Promise(function (resolve, reject) {
+            ipcRenderer.once('sync-service-sync-reply', (event, arg) => {
+                resolve();
+            });
+
+            ipcRenderer.send('sync-service-sync-request', {
+                userId: userId
+            });
+      });
+    }
+
     async doSync() {
         try {
             if (this._isSyncing) {
@@ -32,6 +46,7 @@ export class SyncService {
             }
             this.lastSyncDate = new Date();
             this._isSyncing = true;
+            this.callSync(this.authService.userId);
             this.subject.next({ type: 'success' })
         } catch (e) {
             console.log(e)
