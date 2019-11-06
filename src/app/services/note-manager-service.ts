@@ -22,12 +22,12 @@ export class NoteManagerService {
 
     async createNote(title: string, text: string, currentFolderId: string): Promise<Note> {
       const promise = new Promise<Note>(function (resolve, reject) {
-        ipcRenderer.once('note-manager-service-createfolder-reply', (event, arg) => {
+        ipcRenderer.once('note-manager-service-createnote-reply', (event, arg) => {
             resolve(arg);
         });
       });
 
-      ipcRenderer.send('note-manager-service-createfolder-request', {'title' : title, 'text' : text, 'currentFolderId' : currentFolderId});
+      ipcRenderer.send('note-manager-service-createnote-request', {'title' : title, 'text' : text, 'currentFolderId' : currentFolderId});
       return promise;
     }
 
@@ -43,10 +43,10 @@ export class NoteManagerService {
       return promise;
     }
 
-    async updateNote(note: Note) {
-      const promise = new Promise(function (resolve, reject) {
+    async updateNote(note: Note): Promise<void> {
+      const promise = new Promise<void>(function (resolve, reject) {
         ipcRenderer.once('note-manager-service-updatenote-reply', (event, arg) => {
-            resolve(arg);
+            resolve();
         });
       });
 
@@ -76,21 +76,25 @@ export class NoteManagerService {
       return promise;
     }
 
-    async updateFolder(folder: Folder) {
-      const promise = new Promise(function (resolve, reject) {
-        ipcRenderer.once('note-manager-service-updatenote-reply', (event, arg) => {
-            resolve(arg);
+    async updateFolder(folder: Folder): Promise<void> {
+      const promise = new Promise<void>(function (resolve, reject) {
+        ipcRenderer.once('note-manager-service-updatefolder-reply', (event, arg) => {
+            resolve();
         });
       });
 
-      ipcRenderer.send('note-manager-service-updatenote-request', folder);
+      ipcRenderer.send('note-manager-service-updatefolder-request', folder);
       return promise;
     }
 
     async loadNoteById(id: string): Promise<Note> {
+      const parent = this;
       const promise = new Promise<Note>(function (resolve, reject) {
-        ipcRenderer.once('note-manager-service-loadnotebyid-reply', (event, arg) => {
-            resolve(arg);
+        ipcRenderer.once('note-manager-service-loadnotebyid-reply', (event, note) => {
+            if (note != null) {
+              parent.setDatesForNote(note);
+            }
+            resolve(note);
         });
       });
 
@@ -144,9 +148,13 @@ export class NoteManagerService {
     }
 
     async loadFolderById(id: string): Promise<Folder> {
+      const parent = this;
       const promise = new Promise<Folder>(function (resolve, reject) {
-        ipcRenderer.once('note-manager-service-loadfolderbyid-reply', (event, arg) => {
-            resolve(arg);
+        ipcRenderer.once('note-manager-service-loadfolderbyid-reply', (event, folder) => {
+            if (folder != null) {
+              parent.setDatesForFolder(folder);
+            }
+            resolve(folder);
         });
       });
 
@@ -155,9 +163,11 @@ export class NoteManagerService {
     }
 
     async loadNotesByFolder(folderId: string): Promise<Note[]> {
+      const parent = this;
       const promise = new Promise<Note[]>(function (resolve, reject) {
-        ipcRenderer.once('note-manager-service-loadnotesbyfolder-reply', (event, arg) => {
-            resolve(arg);
+        ipcRenderer.once('note-manager-service-loadnotesbyfolder-reply', (event, notes) => {
+          notes.forEach(note => parent.setDatesForNote(note));
+          resolve(notes);
         });
       });
 
@@ -209,5 +219,21 @@ export class NoteManagerService {
     }
 
     async removeFromFavorites(noteId: string) {
+    }
+
+    setDatesForFolder(folder: Folder) {
+      folder.createdAt = new Date(folder.createdAt);
+      folder.updatedAt = new Date(folder.updatedAt);
+      if (folder.deletedAt != null) {
+          folder.deletedAt = new Date(folder.deletedAt);
+      }
+    }
+
+    setDatesForNote(note: Note) {
+      note.createdAt = new Date(note.createdAt);
+      note.updatedAt = new Date(note.updatedAt);
+      if (note.deletedAt != null) {
+          note.deletedAt = new Date(note.deletedAt);
+      }
     }
 }
