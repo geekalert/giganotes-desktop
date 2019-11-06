@@ -10,9 +10,11 @@ export class NoteManagerService {
     }
 
     async createFolder(title: string, parentFolderId: string): Promise<Folder> {
+      const parent = this;
       const promise = new Promise<Folder>(function (resolve, reject) {
-        ipcRenderer.once('note-manager-service-createfolder-reply', (event, arg) => {
-            resolve(arg);
+        ipcRenderer.once('note-manager-service-createfolder-reply', (event, folder) => {
+            parent.setDatesForFolder(folder);
+            resolve(folder);
         });
       });
 
@@ -21,9 +23,11 @@ export class NoteManagerService {
     }
 
     async createNote(title: string, text: string, currentFolderId: string): Promise<Note> {
+      const parent = this;
       const promise = new Promise<Note>(function (resolve, reject) {
-        ipcRenderer.once('note-manager-service-createnote-reply', (event, arg) => {
-            resolve(arg);
+        ipcRenderer.once('note-manager-service-createnote-reply', (event, note) => {
+            parent.setDatesForNote(note);
+            resolve(note);
         });
       });
 

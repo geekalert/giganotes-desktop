@@ -1,4 +1,4 @@
-import { Manager, SyncService, Storage, NoteManagerService, AuthService } from 'giganotes-core';
+import { Manager, SyncService, Storage, NoteManagerService, AuthService, Note, Folder } from 'giganotes-core';
 import { ipcMain } from 'electron';
 
 export function initIpc(manager: Manager) {
@@ -162,15 +162,33 @@ function initNoteServiceRpc(noteService: NoteManagerService) {
     });
   });
 
-  ipcMain.on('note-manager-service-updatefolder-request', (event, arg) => {
-    noteService.updateFolder(arg['id']).then(() => {
+  ipcMain.on('note-manager-service-updatefolder-request', (event, folder) => {
+    setDatesForFolder(folder);
+    noteService.updateFolder(folder).then(() => {
         event.sender.send('note-manager-service-updatefolder-reply', null);
     });
   });
 
-  ipcMain.on('note-manager-service-updatenote-request', (event, arg) => {
-    noteService.updateNote(arg['id']).then(() => {
+  ipcMain.on('note-manager-service-updatenote-request', (event, note) => {
+    setDatesForNote(note);
+    noteService.updateNote(note).then(() => {
         event.sender.send('note-manager-service-updatenote-reply', null);
     });
   });
+}
+
+function setDatesForFolder(folder: Folder) {
+  folder.createdAt = new Date(folder.createdAt);
+  folder.updatedAt = new Date(folder.updatedAt);
+  if (folder.deletedAt != null) {
+      folder.deletedAt = new Date(folder.deletedAt);
+  }
+}
+
+function setDatesForNote(note: Note) {
+  note.createdAt = new Date(note.createdAt);
+  note.updatedAt = new Date(note.updatedAt);
+  if (note.deletedAt != null) {
+      note.deletedAt = new Date(note.deletedAt);
+  }
 }
