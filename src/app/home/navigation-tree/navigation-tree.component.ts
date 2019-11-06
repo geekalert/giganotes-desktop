@@ -6,7 +6,7 @@ import { AddFolderDialogComponent } from '../add-folder-dialog/add-folder-dialog
 import { RenameFolderDialogComponent } from '../rename-folder-dialog/rename-folder-dialog.component'
 import { Folder } from '../../model/folder';
 import { v4 as uuid } from 'uuid';
-import { LocalNoteService } from '../../services/local-note-service';
+import { NoteManagerService } from '../../services/note-manager-service';
 import { AuthService } from '../../services/auth-service';
 import { NavTreeEventsService } from '../../services/nav-tree-events-.service';
 
@@ -23,7 +23,7 @@ export class NavigationTreeComponent implements OnInit {
 
   constructor(private router: Router,
     private dialog: MatDialog,
-    private noteService: LocalNoteService,
+    private noteService: NoteManagerService,
     private authService: AuthService) { }
 
   ngOnInit() {
@@ -60,17 +60,7 @@ export class NavigationTreeComponent implements OnInit {
   }
 
   async createFolder(parentTreeItem: TreeFolderItem, folderName: string) {
-    const parent = await this.noteService.loadFolderById(parentTreeItem.folderId)
-    const folder = new Folder();
-    let now = new Date()
-    folder.createdAt = now
-    folder.updatedAt = now
-    folder.id = uuid()
-    folder.title = folderName
-    folder.parentId = parent.id
-    folder.level = parent.level + 1
-    folder.userId = this.authService.userId
-    await this.noteService.uploadFolder(folder)
+    const folder = await this.noteService.createFolder(folderName, parentTreeItem.folderId)
 
     const treeItem = new TreeFolderItem();
 
