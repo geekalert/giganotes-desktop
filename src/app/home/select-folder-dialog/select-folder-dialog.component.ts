@@ -1,7 +1,8 @@
+import { AuthService } from './../../services/auth-service';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { TreeItem, TreeFolderItem } from '../../model/ui/tree-item';
-import { LocalNoteService } from '../../services/local-note-service';
+import { NoteManagerService } from '../../services/note-manager-service';
 import {MAT_DIALOG_DATA} from '@angular/material';
 
 @Component({
@@ -16,7 +17,8 @@ export class SelectFolderDialogComponent implements OnInit {
   treeItemsMap = new Map<string, TreeItem>();
 
   constructor(public dialogRef: MatDialogRef<SelectFolderDialogComponent>,
-    private noteService: LocalNoteService,
+    private noteService: NoteManagerService,
+    private authService: AuthService,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
@@ -30,7 +32,7 @@ export class SelectFolderDialogComponent implements OnInit {
   }
 
   async loadChildrenToFolder(root: TreeFolderItem) {
-    const foldersList = await this.noteService.getAllFolders(false)
+    const foldersList = await this.noteService.getAllFolders()
     const sortedFoldersList = foldersList.sort((a, b) => a.level - b.level);
 
     this.treeItemsMap.set(sortedFoldersList[0].id, root);

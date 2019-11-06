@@ -44,7 +44,7 @@
           <mat-icon>folder</mat-icon>New folder
         </button>
 
-        <button mat-button (click)="doSync()" *ngIf="!authService.isOffline">
+        <button mat-button (click)="doSync()" *ngIf="!isOffline">
           <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>Syncronize
         </button>
 

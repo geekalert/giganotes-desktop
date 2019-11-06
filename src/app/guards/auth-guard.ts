@@ -21,7 +21,6 @@ export class AuthGuard implements CanActivate {
     async checkToken(): Promise<boolean> {
         const hasToken = await this.authService.hasValidToken()
         if (hasToken) {
-            await this.authService.readTokenAndUserameFromStorage()
             return true;
         } else {
             this.router.navigate(['/login'])

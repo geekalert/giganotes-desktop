@@ -1,4 +1,3 @@
-import { LocalNoteService } from '../../services/local-note-service';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatIconRegistry } from '@angular/material';
@@ -9,6 +8,7 @@ import { GoogleLoginProvider } from '../../services/social-auth/google-login-pro
 
 import { Folder } from '../../model/folder';
 import { DomSanitizer } from '@angular/platform-browser';
+import { NoteManagerService } from '../../services/note-manager-service';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -26,9 +26,9 @@ export class LoginComponent implements OnInit {
         private iconRegistry: MatIconRegistry,
         private sanitizer: DomSanitizer,
         private route: ActivatedRoute,
+        private noteManagerService: NoteManagerService,
         private router: Router,
         private authService: AuthService,
-        private noteService: LocalNoteService,
         private socialAuthService: SocialAuthService,
         private loggerService: LoggerService) {
 
@@ -48,8 +48,6 @@ export class LoginComponent implements OnInit {
         const result = await this.authService.loginSocial({ email: user.email, provider: user.provider, token: user.idToken })
         if (result.error != null) {
             this.signInErrorMessage = result.error;
-        } else {
-            await this.saveFolder(result);
         }
         this.isLoading = false;
         return result;
@@ -76,19 +74,6 @@ export class LoginComponent implements OnInit {
         })
     }
 
-    async saveFolder(result: any) {
-        const folder = new Folder();
-        folder.id = result.rootFolder.id;
-        folder.title = result.rootFolder.title;
-        folder.parentId = result.rootFolder.parentId;
-        folder.level = result.rootFolder.level;
-        folder.userId = result.rootFolder.userId;
-        folder.createdAt = new Date(result.rootFolder.createdAt)
-        folder.updatedAt = new Date(result.rootFolder.updatedAt)
-
-        await this.noteService.uploadFolder(folder);
-    }
-
     handleError(err: any) {
         if (err.status === 401) {
             this.signInErrorMessage = "Incorrect login or password";
@@ -104,8 +89,6 @@ export class LoginComponent implements OnInit {
         const result = await this.authService.login({ email: this.signInModel.username, password: this.signInModel.password })
         if (result.error != null) {
             this.signInErrorMessage = result.error;
-        } else {
-            await this.saveFolder(result);
         }
         this.isLoading = false;
         return result;
@@ -132,8 +115,6 @@ export class LoginComponent implements OnInit {
             } else {
                 this.registerErrorMessage = result.error;
             }
-        } else {
-            await this.saveFolder(result);
         }
         this.isLoading = false;
         return result;
@@ -155,7 +136,7 @@ export class LoginComponent implements OnInit {
 
     doOffline() {
         this.authService.loginOffline()
-            .then(r => this.noteService.createRootFolderIfNotExists())
+            .then(r => this.noteManagerService.createRootFolderIfNotExists())
             .then(r => this.router.navigate(['home']));
         return false;
     }

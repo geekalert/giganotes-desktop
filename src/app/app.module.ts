@@ -15,8 +15,9 @@ import { Storage } from './services/storage';
 
 import { LoggerService } from './services/logger-service';
 import { ElectronService } from './providers/electron.service';
-import { LocalNoteService } from './services/local-note-service';
+import { NoteManagerService } from './services/note-manager-service';
 import { SyncService } from './services/sync-service';
+
 
 import { AuthGuard } from './guards/auth-guard';
 import { AuthService } from './services/auth-service';
@@ -64,7 +65,6 @@ import {
   MatProgressBarModule
 } from '@angular/material';
 import { EventBusService } from './services/event-bus-service';
-import { DataService } from './services/data-service';
 import { DynamicScriptLoaderService } from './services/dynamic-script-loader.service';
 
 @NgModule({
@@ -104,13 +104,12 @@ import { DynamicScriptLoaderService } from './services/dynamic-script-loader.ser
   providers: [
     Storage,
     LoggerService,
-    LocalNoteService,
+    NoteManagerService,
     SyncService,
     ElectronService,
     AuthGuard,
     AuthService,
     EventBusService,
-    DataService,
     SocialAuthService,
     ScreenService,
     DynamicScriptLoaderService,

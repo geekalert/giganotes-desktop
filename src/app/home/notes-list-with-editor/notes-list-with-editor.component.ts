@@ -4,7 +4,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, 
 import { MatIconRegistry, MatInput } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
-import { LocalNoteService } from './../../services/local-note-service';
+import { NoteManagerService } from '../../services/note-manager-service';
 import { Note } from "../../model/note";
 import { Folder } from "../../model/folder";
 import { LinkTreeItem } from "../../model/ui/linktreeitem";
@@ -54,7 +54,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   navTreeEventsService = new NavTreeEventsService();
   isNavMenuLoaded = false;
   isSyncOnInitDone = false;
-
+  isOffline = false;
   isEditorScriptLoaded = false;
   isSelectedNoteLoaded = false;
   public searchFilter: string;
@@ -144,6 +144,10 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   ngOnInit() {
+    this.authService.isOffline().then(isOffline => {
+      this.isOffline = isOffline;
+    });
+
     this.configureEditorSetup();
 
     this.eventBusService.getMessages().subscribe(e => {
@@ -233,7 +237,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async doSync() {
-    if (this.authService.isOffline) {
+    if (this.isOffline) {
       return;
     }
     await this.syncService.doSync();
@@ -260,7 +264,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     elementRef: ElementRef,
     private route: ActivatedRoute,
     private location: Location,
-    private noteService: LocalNoteService,
+    private noteService: NoteManagerService,
     public authService: AuthService,
     private syncService: SyncService,
     private eventBusService: EventBusService,
@@ -345,8 +349,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async buildTreeFromNodesList(): Promise<Folder> {
-    const folders = await this.noteService.getAllFolders(false);
-    const notes = await this.noteService.getAllNotes(false);
+    const folders = await this.noteService.getAllFolders();
+    const notes = await this.noteService.getAllNotes();
 
     folders.sort((a, b) => a.level - b.level);
 
@@ -390,7 +394,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async loadAllNotes() {
-    this.notes = await this.noteService.getAllNotes(false);
+    this.notes = await this.noteService.getAllNotes();
     this.currentFolder = await this.noteService.getRootFolder();
     await this.loadSpecificOrFirstNote();
   }
@@ -452,7 +456,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   async onNewNote() {
     this.onEdit(); // Turn on design mode
-    this.selectedNote = await this.createNote();
+    this.selectedNote = await this.noteService.createNote("", "", this.currentFolder.id);
     this.folderOfSelectedNote = await this.noteService.loadFolderById(
       this.selectedNote.folderId
     );
@@ -466,7 +470,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
     this.onEdit(); // Turn on design mode
 
-    this.selectedNote = await this.createNote();
+    this.selectedNote = await this.noteService.createNote("","", this.currentFolder.id)
     this.notes.splice(0, 0, this.selectedNote);
     this.selectedNoteInfo = this.notes[0];
 
@@ -484,21 +488,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     dialogRef.afterClosed().subscribe(folderName => {
       this.navigationTree.createFolder(this.curTreeItem as TreeFolderItem, folderName);
     });
-  }
-
-  async createNote(): Promise<Note> {
-    let note = new Note();
-    note.title = "";
-    note.text = "";
-    note.id = uuid();
-    note.folderId = this.currentFolder.id;
-    note.level = this.currentFolder.level + 1;
-    note.userId = this.authService.userId;
-    let now = new Date();
-    note.createdAt = now;
-    note.updatedAt = now;
-    await this.noteService.uploadNote(note);
-    return Promise.resolve(note);
   }
 
   onSaveNote() {
@@ -665,7 +654,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   async logout() {
     await this.authService.logout();
 
-    if (this.authService.loginType === 'social') {
+    const loginType = await this.authService.loginType()
+    if (loginType === 'social') {
       this.socialAuthService.signOut();
     }
 
@@ -722,7 +712,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async loadChildrenToFolder(root: TreeFolderItem) {
-    const foldersList = await this.noteService.getAllFolders(false)
+    const foldersList = await this.noteService.getAllFolders()
     const sortedFoldersList = foldersList.sort((a, b) => a.level - b.level);
 
     this.treeItemsMap.set(sortedFoldersList[0].id, root)
