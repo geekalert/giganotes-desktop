@@ -61,7 +61,14 @@ export class AuthService {
   }
 
   async logout() {
-    return null;
+    const promise = new Promise<AuthResponse>(function (resolve, reject) {
+      ipcRenderer.once('auth-service-logout-reply', (event, arg) => {
+          resolve();
+      });
+    });
+
+    ipcRenderer.send('auth-service-logout-request', null);
+    return promise;
   }
 
   async signup(values: any): Promise<AuthResponse> {

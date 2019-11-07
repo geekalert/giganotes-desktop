@@ -29,7 +29,7 @@ function initAuthServiceIpc(authService: AuthService) {
 
   ipcMain.on('auth-service-logout-request', (event, arg) => {
     authService.logout().then(() => {
-        event.sender.send('auth-service-logoit-reply', {});
+        event.sender.send('auth-service-logout-reply', {});
     });
   });
 
