@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as url from 'url';
 import { Manager } from 'giganotes-core';
 import { initIpc } from './ipc-server';
+import { AppConfig } from './src/environments/environment';
 
 const DB_FILE_NAME = 'local.db';
 
@@ -19,11 +20,9 @@ function getDbPath(): string {
 }
 
 async function initCore() {
-    console.log('Init giganotes core');
     const manager = new Manager();
     const dbPath = getDbPath();
-    console.log(dbPath);
-    await manager.init(dbPath);
+    await manager.init(dbPath, AppConfig.apiUrl);
     initIpc(manager);
 }
 
