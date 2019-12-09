@@ -22,7 +22,7 @@ function getDbPath(): string {
 async function initCore() {
     const manager = new Manager();
     const dbPath = getDbPath();
-    await manager.init(dbPath, AppConfig.apiUrl);
+    await manager.init(dbPath, AppConfig.scheme + AppConfig.apiUrl);
     initIpc(manager);
 }
 
