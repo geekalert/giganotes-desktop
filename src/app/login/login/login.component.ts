@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     }
 
     async makeSocialLogin(user: any) {
-        const result = await this.authService.loginSocial({ email: user.email, provider: user.provider, token: user.idToken })
+        const result = await this.noteManagerService.loginSocial({ email: user.email, provider: user.provider, token: user.idToken })
         if (result.error != null) {
             this.signInErrorMessage = result.error;
         }
@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit {
     }
 
     async makeLogin() {
-        const result = await this.authService.login({ email: this.signInModel.username, password: this.signInModel.password })
+        const result = await this.noteManagerService.login({ email: this.signInModel.username, password: this.signInModel.password })
         if (result.error != null) {
             this.signInErrorMessage = result.error;
         }
@@ -108,7 +108,7 @@ export class LoginComponent implements OnInit {
     }
 
     async makeSignUp() {
-        const result = await this.authService.signup({ email: this.registerModel.username, password: this.registerModel.password });
+        const result = await this.noteManagerService.signup({ email: this.registerModel.username, password: this.registerModel.password });
         if (result.error != null) {
             if (result.error === 'USER_EXISTS') {
                 this.registerErrorMessage = 'User already exists.';

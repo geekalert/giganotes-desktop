@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Note } from '../model/note';
 import { Folder } from '../model/folder';
 import { ipcRenderer } from 'electron';
+import { AuthResponse } from '../model/server-responses-models/auth-response';
 
 @Injectable()
 export class NoteManagerService {
@@ -9,6 +10,39 @@ export class NoteManagerService {
     constructor() {
     }
 
+    async login(values: any): Promise<AuthResponse> {
+      const promise = new Promise<AuthResponse>(function (resolve, reject) {
+        ipcRenderer.once('note-manager-service-login-reply', (event, arg) => {
+            resolve(arg);
+        });
+      });
+
+      ipcRenderer.send('note-manager-service-login-request', values);
+      return promise;
+    }
+
+    async loginSocial(values: any): Promise<AuthResponse> {
+      const promise = new Promise<AuthResponse>(function (resolve, reject) {
+        ipcRenderer.once('note-manager-service-loginsocial-reply', (event, arg) => {
+            resolve(arg);
+        });
+      });
+
+      ipcRenderer.send('note-manager-service-loginsocial-request', values);
+      return promise;
+    }
+
+    async signup(values: any): Promise<AuthResponse> {
+      const promise = new Promise<AuthResponse>(function (resolve, reject) {
+        ipcRenderer.once('note-manager-service-signup-reply', (event, arg) => {
+            resolve(arg);
+        });
+      });
+
+      ipcRenderer.send('note-manager-service-signup-request', values);
+      return promise;
+    }
+s
     async createFolder(title: string, parentFolderId: string): Promise<Folder> {
       const parent = this;
       const promise = new Promise<Folder>(function (resolve, reject) {

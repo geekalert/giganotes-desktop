@@ -90,6 +90,24 @@ function initStorageIpc(storage: Storage) {
 
 function initNoteServiceRpc(noteService: NoteManagerService) {
 
+  ipcMain.on('note-manager-service-login-request', (event, arg) => {
+    noteService.login(arg).then(authResponse => {
+        event.sender.send('note-manager-service-login-reply', authResponse);
+    });
+  });
+
+  ipcMain.on('note-manager-service-loginsocial-request', (event, arg) => {
+    noteService.loginSocial(arg).then(authResponse => {
+        event.sender.send('note-manager-service-loginsocial-reply', authResponse);
+    });
+  });
+
+  ipcMain.on('note-manager-service-signup-request', (event, arg) => {
+    noteService.signup(arg).then(authResponse => {
+        event.sender.send('note-manager-service-signup-reply', authResponse);
+    });
+  });
+
   ipcMain.on('note-manager-service-createfolder-request', (event, arg) => {
     noteService.createFolder(arg['title'], arg['parentFolderId']).then(folder => {
         event.sender.send('note-manager-service-createfolder-reply', folder);
