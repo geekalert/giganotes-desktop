@@ -4,5 +4,4 @@ export interface AuthResponse {
     token: string;
     userId: number;
     rootFolder: Folder;
-    error: string;
 }

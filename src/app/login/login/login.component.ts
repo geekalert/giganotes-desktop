@@ -45,26 +45,20 @@ export class LoginComponent implements OnInit {
     }
 
     async makeSocialLogin(user: any) {
-        const result = await this.noteManagerService.loginSocial({ email: user.email, provider: user.provider, token: user.idToken })
-        if (result.error != null) {
-            this.signInErrorMessage = result.error;
+        const authResult = await this.noteManagerService.loginSocial({ email: user.email, provider: user.provider, token: user.idToken })
+        if (!authResult.success) {
+          this.signInErrorMessage = this.makeErrorMessage(authResult.errorCode);
+          this.isLoading = false;
+        } else {
+          this.router.navigate(['home']);
         }
-        this.isLoading = false;
-        return result;
     }
 
-    async onSocialLoginDone(user: any) {
+    onSocialLoginDone(user: any) {
         this.isLoading = true;
         this.signInErrorMessage = '';
 
-        this.makeSocialLogin(user)
-            .then(result => {
-                if (result.error == null) {
-                    this.router.navigate(['home']);
-                }
-            })
-            .catch(err => this.handleError(err));
-
+        this.makeSocialLogin(user);
     }
 
 
@@ -74,50 +68,41 @@ export class LoginComponent implements OnInit {
         })
     }
 
-    handleError(err: any) {
-        if (err.status === 401) {
-            this.signInErrorMessage = "Incorrect login or password";
+    makeErrorMessage(errorCode: number): string {
+        if (errorCode === 2) {
+            return "Incorrect login or password";
         }
 
-        if (err.status === 0) {
-            this.signInErrorMessage = "Cannot connect to server. Please check your connection.";
+        if (errorCode === 1) {
+            return "Cannot connect to server. Please check your connection.";
         }
-        this.isLoading = false;
     }
 
     async makeLogin() {
-        const result = await this.noteManagerService.login({ email: this.signInModel.username, password: this.signInModel.password })
-        if (result.error != null) {
-            this.signInErrorMessage = result.error;
+        const authResult = await this.noteManagerService.login({ email: this.signInModel.username, password: this.signInModel.password })
+        if (!authResult.success) {
+            this.signInErrorMessage = this.makeErrorMessage(authResult.errorCode);
+            this.isLoading = false;
+        } else {
+          this.router.navigate(['home']);
         }
-        this.isLoading = false;
-        return result;
     }
 
-    async login() {
+    login() {
         this.isLoading = true;
         this.signInErrorMessage = '';
 
-        this.makeLogin()
-            .then(result => {
-                if (result.error == null) {
-                    this.router.navigate(['home']);
-                }
-            })
-            .catch(err => this.handleError(err));
+        this.makeLogin();
     }
 
     async makeSignUp() {
-        const result = await this.noteManagerService.signup({ email: this.registerModel.username, password: this.registerModel.password });
-        if (result.error != null) {
-            if (result.error === 'USER_EXISTS') {
-                this.registerErrorMessage = 'User already exists.';
-            } else {
-                this.registerErrorMessage = result.error;
-            }
+        const authResult = await this.noteManagerService.signup({ email: this.registerModel.username, password: this.registerModel.password });
+        if (!authResult.success) {
+          this.signInErrorMessage = this.makeErrorMessage(authResult.errorCode);
+          this.isLoading = false;
+        } else {
+          this.router.navigate(['home']);
         }
-        this.isLoading = false;
-        return result;
     }
 
 
@@ -125,13 +110,7 @@ export class LoginComponent implements OnInit {
         this.isLoading = true;
         this.registerErrorMessage = '';
 
-        this.makeSignUp()
-            .then(result => {
-                if (result.error == null) {
-                    this.router.navigate(['home']);
-                }
-            })
-            .catch(err => this.handleError(err));
+        this.makeSignUp();
     }
 
     doOffline() {

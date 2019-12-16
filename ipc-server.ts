@@ -49,6 +49,10 @@ function initAuthServiceIpc(authService: AuthService) {
       event.sender.send('auth-service-isoffline-reply', authService.isOffline);
   });
 
+  ipcMain.on('auth-service-email-request', (event, arg) => {
+    event.sender.send('auth-service-email-reply', authService.email);
+  });
+
   ipcMain.on('auth-service-logintype-request', (event, arg) => {
     event.sender.send('auth-service-logintype-reply', authService.loginType);
 });

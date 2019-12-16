@@ -16,6 +16,17 @@ export class AuthService {
     return promise;
   }
 
+  getEmail(): Promise<string> {
+    const promise = new Promise<string>(function (resolve, reject) {
+      ipcRenderer.once('auth-service-email-reply', (event, arg) => {
+          resolve(arg);
+      });
+    });
+
+    ipcRenderer.send('auth-service-email-request', null);
+    return promise;
+  }
+
   loginType(): Promise<string> {
     const promise = new Promise<string>(function (resolve, reject) {
       ipcRenderer.once('auth-service-logintype-reply', (event, arg) => {

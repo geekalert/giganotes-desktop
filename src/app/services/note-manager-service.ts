@@ -1,3 +1,4 @@
+import { AuthResult } from './../model/auth-result';
 import { Injectable } from '@angular/core';
 import { Note } from '../model/note';
 import { Folder } from '../model/folder';
@@ -10,8 +11,8 @@ export class NoteManagerService {
     constructor() {
     }
 
-    async login(values: any): Promise<AuthResponse> {
-      const promise = new Promise<AuthResponse>(function (resolve, reject) {
+    async login(values: any): Promise<AuthResult> {
+      const promise = new Promise<AuthResult>(function (resolve, reject) {
         ipcRenderer.once('note-manager-service-login-reply', (event, arg) => {
             resolve(arg);
         });
@@ -21,8 +22,8 @@ export class NoteManagerService {
       return promise;
     }
 
-    async loginSocial(values: any): Promise<AuthResponse> {
-      const promise = new Promise<AuthResponse>(function (resolve, reject) {
+    async loginSocial(values: any): Promise<AuthResult> {
+      const promise = new Promise<AuthResult>(function (resolve, reject) {
         ipcRenderer.once('note-manager-service-loginsocial-reply', (event, arg) => {
             resolve(arg);
         });
@@ -32,8 +33,8 @@ export class NoteManagerService {
       return promise;
     }
 
-    async signup(values: any): Promise<AuthResponse> {
-      const promise = new Promise<AuthResponse>(function (resolve, reject) {
+    async signup(values: any): Promise<AuthResult> {
+      const promise = new Promise<AuthResult>(function (resolve, reject) {
         ipcRenderer.once('note-manager-service-signup-reply', (event, arg) => {
             resolve(arg);
         });

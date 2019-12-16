@@ -71,6 +71,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   searchSubscription: Subscription;
 
+  email = '';
+
   //Parameters
   mode: string;
   folderId: string;
@@ -146,6 +148,10 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   ngOnInit() {
     this.authService.isOffline().then(isOffline => {
       this.isOffline = isOffline;
+    });
+
+    this.authService.getEmail().then(email => {
+      this.email = email;
     });
 
     this.configureEditorSetup();
