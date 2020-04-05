@@ -3,9 +3,9 @@ import * as path from 'path';
 import * as url from 'url';
 import { Manager } from 'giganotes-core';
 import { initIpc } from './ipc-server';
-import { AppConfig } from './src/environments/environment';
 
 const DB_FILE_NAME = 'local.db';
+const apiUrl = 'https://backend.giganotes.com';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -22,7 +22,7 @@ function getDbPath(): string {
 async function initCore() {
     const manager = new Manager();
     const dbPath = getDbPath();
-    await manager.init(dbPath, AppConfig.scheme + AppConfig.apiUrl);
+    await manager.init(dbPath, apiUrl);
     initIpc(manager);
 }
 
