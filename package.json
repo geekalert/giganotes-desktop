@@ -14,7 +14,7 @@
   "main": "main.js",
   "private": true,
   "scripts": {
-    "postinstall": "npm run postinstall:electron && npx electron-builder install-app-deps && npm run rebuild-electron-deps",
+    "postinstall": "npm run postinstall:electron && npx electron-builder install-app-deps && npm run rebuild-tantivy && npm run rebuild-electron-deps",
     "postinstall:web": "node postinstall-web",
     "postinstall:electron": "node postinstall",
     "ng": "ng",
@@ -32,6 +32,7 @@
     "electron:mac": "npm run build:prod && npx electron-builder build --mac",
     "test": "npm run postinstall:web && ng test",
     "e2e": "npm run postinstall:web && ng e2e",
+    "rebuild-tantivy": "electron-build-env neon build giganotes-core --release",
     "rebuild-electron-deps": "electron-rebuild -f -w sqlite3"
   },
   "dependencies": {
@@ -50,14 +51,15 @@
     "angular-draggable-droppable": "^4.0.2",
     "async-file": "2.0.2",
     "electron-oauth-helper": "3.0.0",
-    "material-design-icons": "^3.0.1",
-    "roboto-fontface": "^0.10.0",
     "giganotes-core": "file:../giganotes-core",
+    "material-design-icons": "^3.0.1",
+    "node-abi": "2.5.1",
+    "roboto-fontface": "^0.10.0",
     "rxjs": "6.3.2",
-    "uuid": "3.3.2",
-    "node-abi": "2.5.1"
+    "uuid": "3.3.2"
   },
   "devDependencies": {
+    "electron-build-env": "^0.2.0",
     "@angular-builders/custom-webpack": "^2.4.1",
     "@angular-builders/dev-server": "^2.2.3",
     "@angular-devkit/build-angular": "0.8.1",
