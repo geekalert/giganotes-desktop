@@ -61,7 +61,6 @@
   "devDependencies": {
     "electron-build-env": "^0.2.0",
     "@angular-builders/custom-webpack": "9.1.0",
-    "@angular-builders/dev-server": "7.3.1",
     "@angular-devkit/build-angular": "0.901.4",
     "@angular/cli": "9.1.4",
     "@angular/compiler-cli": "9.1.4",

@@ -9,7 +9,7 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-builders/custom-webpack:server",
           "options": {
             "customWebpackConfig": {
               "path": "./extra-webpack.config.js"
@@ -70,7 +70,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/dev-server:generic",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
             "browserTarget": "angular-electron:build"
           },
