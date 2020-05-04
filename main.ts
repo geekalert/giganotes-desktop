@@ -1,9 +1,7 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import { helloWorld } from 'giganotes-core';
-
-//import { initIpc } from './ipc-server';
+import { helloWorld } from 'giganotes-core-js';
 
 const DB_FILE_NAME = 'local.db';
 const apiUrl = 'https://backend.giganotes.com';
