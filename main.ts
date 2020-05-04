@@ -1,8 +1,9 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import { Manager } from 'giganotes-core';
-import { initIpc } from './ipc-server';
+import { helloWorld } from 'giganotes-core';
+
+//import { initIpc } from './ipc-server';
 
 const DB_FILE_NAME = 'local.db';
 const apiUrl = 'https://backend.giganotes.com';
@@ -20,10 +21,7 @@ function getDbPath(): string {
 }
 
 async function initCore() {
-    const manager = new Manager();
-    const dbPath = getDbPath();
-    await manager.init(dbPath, apiUrl);
-    initIpc(manager);
+  console.log(helloWorld());
 }
 
 async function startApp() {

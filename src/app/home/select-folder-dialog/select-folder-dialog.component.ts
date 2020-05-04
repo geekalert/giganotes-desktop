@@ -1,9 +1,9 @@
 import { AuthService } from './../../services/auth-service';
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import { TreeItem, TreeFolderItem } from '../../model/ui/tree-item';
 import { NoteManagerService } from '../../services/note-manager-service';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-select-folder-dialog',

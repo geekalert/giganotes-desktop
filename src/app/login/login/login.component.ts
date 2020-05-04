@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
 import { AuthService } from '../../services/auth-service';
 import { LoggerService } from '../../services/logger-service';
 import { SocialAuthService } from '../../services/social-auth/social-auth-service';
 import { GoogleLoginProvider } from '../../services/social-auth/google-login-provider';
 
-import { Folder } from '../../model/folder';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NoteManagerService } from '../../services/note-manager-service';
 

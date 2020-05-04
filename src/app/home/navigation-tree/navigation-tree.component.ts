@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChildren, QueryList } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from "@angular/router";
 import { TreeItem, TreeFolderItem } from '../../model/ui/tree-item';
 import { AddFolderDialogComponent } from '../add-folder-dialog/add-folder-dialog.component';
